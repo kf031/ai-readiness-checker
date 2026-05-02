@@ -24,7 +24,11 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Success Criteria** (what must be TRUE):
   1. Any valid URL can be passed and the system returns parsed HTML with realistic browser headers and automatic redirect following
   2. Connection errors, timeouts (10s), and HTTP errors (4xx, 5xx) return a structured error result instead of crashing
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Data Contracts + Project Setup (FetchResult/CrawlError dataclasses, pyproject.toml, package init)
+- [ ] 01-02-PLAN.md — Crawler Implementation + Test Suite (fetch_url() with SSRF prevention, pytest test coverage)
 
 ### Phase 2: Access Signals — robots.txt + llms.txt
 **Goal**: AI bot access permissions and llms.txt presence are analyzed and scored for any website
@@ -109,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation — Data Contracts + Crawler | 0/? | Not started | - |
+| 1. Foundation — Data Contracts + Crawler | 0/2 | Not started | - |
 | 2. Access Signals — robots.txt + llms.txt | 0/? | Not started | - |
 | 3. Schema Extraction | 0/? | Not started | - |
 | 4. Content Analysis | 0/? | Not started | - |
