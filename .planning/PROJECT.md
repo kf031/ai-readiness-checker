@@ -8,6 +8,22 @@ An open-source Python tool that crawls any website and produces an **AI Readines
 
 A single URL input returns a clear, scored, actionable report showing exactly why a site is or isn't being picked up by AI search engines — and what to fix.
 
+## Current Milestone: v1.0 Initial Release
+
+**Goal:** Ship an open-source Python tool that scores any website's AI search engine visibility with both CLI and Streamlit UI.
+
+**Target features:**
+- URL crawler with realistic headers and graceful error handling
+- robots.txt AI bot access analysis (7 bots)
+- llms.txt detection with content preview
+- Structured data extraction and scoring (6 schema types)
+- NLP content quality analysis (readability, entities, headings, Q&A density)
+- Weighted composite scoring (0-100) with A-F grade
+- Prioritized plain-English recommendations
+- CLI entry point (`python -m checker`) with rich output
+- Streamlit dashboard with interactive results
+- pytest test suite
+
 ## Requirements
 
 ### Validated
@@ -76,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-02 after initialization*
+*Last updated: 2026-05-02 — Milestone v1.0 started*
