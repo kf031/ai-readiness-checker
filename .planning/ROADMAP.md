@@ -6,7 +6,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 
 ## Phases
 
-- [ ] **Phase 1: Foundation — Data Contracts + Crawler** - Type-safe data contracts for all inter-module communication, plus URL fetching with realistic headers and graceful error handling
+- [x] **Phase 1: Foundation — Data Contracts + Crawler** - Type-safe data contracts for all inter-module communication, plus URL fetching with realistic headers and graceful error handling
 - [ ] **Phase 2: Access Signals — robots.txt + llms.txt** - AI bot access analysis for 7 bots and llms.txt presence detection
 - [ ] **Phase 3: Schema Extraction** - Structured data extraction and weighted scoring across 6 high-value schema types
 - [ ] **Phase 4: Content Analysis** - NLP-based content quality analysis (readability, entities, headings, Q&A density)
@@ -30,7 +30,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 - [ ] 01-01: Data Contracts + Project Setup — FetchResult/CrawlError dataclasses, pyproject.toml, package init
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-02: Crawler Implementation + Test Suite — fetch_url() with SSRF prevention, pytest test coverage
+- [x] 01-02: Crawler Implementation + Test Suite — fetch_url() with SSRF prevention, pytest test coverage
 
 **Cross-cutting constraints:**
 - All downstream modules (Phases 2-4) consume `FetchResult` and `CrawlError` from `src/checker/contracts.py`
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation — Data Contracts + Crawler | 2/2 | Planned | - |
+| 1. Foundation — Data Contracts + Crawler | 2/2 | Complete | - |
 | 2. Access Signals — robots.txt + llms.txt | 0/? | Not started | - |
 | 3. Schema Extraction | 0/? | Not started | - |
 | 4. Content Analysis | 0/? | Not started | - |
