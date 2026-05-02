@@ -1,47 +1,65 @@
 # Project State
 
-**Project:** AI Readiness Checker
-**Milestone:** v1.0 Initial Release
-**Core Value:** A single URL input returns a clear, scored, actionable report showing exactly why a site is or isn't being picked up by AI search engines — and what to fix.
+## Project Reference
+
+See: .planning/PROJECT.md (updated 2026-05-02)
+
+**Core value:** A single URL input returns a clear, scored, actionable report showing exactly why a site is or isn't being picked up by AI search engines — and what to fix.
+**Current focus:** Phase 1 — Foundation (Data Contracts + Crawler)
 
 ## Current Position
 
-- **Milestone:** v1.0 Initial Release
-- **Phase:** Not started (defining roadmap)
-- **Plan:** —
-- **Status:** Defining roadmap
-- **Last activity:** 2026-05-02 — Milestone v1.0 started
+Phase: 1 of 8 (Foundation — Data Contracts + Crawler)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-05-02 — Roadmap created for v1.0 Initial Release
 
-## Progress
+Progress: [░░░░░░░░░░] 0%
 
-```
-Research   [██████████] Done
-Reqs       [██████████] Done
-Roadmap    [░░░░░░░░░░] In progress
-Phases     [░░░░░░░░░░] Not started
-Implement  [░░░░░░░░░░] Not started
-```
+## Performance Metrics
 
-## Recent Decisions
+**Velocity:**
+- Total plans completed: 0
+- Average duration: N/A
+- Total execution time: 0.0 hours
 
-| Decision | Outcome |
-|----------|---------|
-| Python 3.11+ floor (pandas 3.x requirement) | Confirmed |
-| spaCy en_core_web_sm (not md/lg) | Confirmed — fast enough, no GPU needed |
-| extruct for structured data extraction | Confirmed |
-| Synchronous requests (no httpx/async) | Confirmed — single URL, no concurrency needed |
-| Build order: contracts → crawler → modules → scorer → CLI → Streamlit → tests | Confirmed from research |
+**By Phase:**
 
-## Pending Todos
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+**Recent Trend:**
+- No plans completed yet.
+
+*Updated after each plan completion*
+
+## Accumulated Context
+
+### Decisions
+
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- spaCy en_core_web_sm selected (not md/lg) — lightweight, no GPU needed
+- extruct for structured data extraction — handles JSON-LD, microdata, RDFa in one pass
+- Streamlit for demo UI — easiest Python-native web demo with no backend required
+- Weighted scoring: content 35%, schema 30%, robots 20%, llms.txt 15%
+
+### Pending Todos
 
 None yet.
 
-## Blockers / Concerns
+### Blockers/Concerns
 
 None yet.
+
+## Deferred Items
+
+None.
 
 ## Session Continuity
 
 Last session: 2026-05-02
-Stopped at: Milestone v1.0 started, roadmap creation in progress
-Next: Roadmap creation
+Stopped at: Roadmap creation completed; ready for Phase 1 planning
+Resume file: None
