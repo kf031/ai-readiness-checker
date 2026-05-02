@@ -44,8 +44,23 @@ Build an open-source Python tool that scores any website's AI search engine visi
   1. User can see the access status (allowed, blocked, or not_mentioned) for each of 7 AI bots from the site's robots.txt
   2. User receives a 0.0-1.0 bot access score that accounts for allowed bots (added points), blocked bots (subtracted points), and not_mentioned (neutral)
   3. User sees whether a /llms.txt file exists at the site root, with a 500-character content preview when present
-  4. User receives a binary llms.txt score (1.0 when found, 0.0 when not found)
-**Plans**: TBD
+  4. User receives an llms.txt score: valid format = 1.0, malformed = 0.3, missing = 0.0
+**Plans**: 4 plans in 3 waves
+
+**Wave 1** *(no dependencies)*
+- [ ] 02-01: Data Contracts + Config + Test Scaffolding — RobotsResult/BotStatus/LlmsResult dataclasses, httpx dependency, test stubs
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 02-02: robots.txt Module — fetch, parse, classify 7 AI bots, compute bot access score (BOT-01, BOT-02)
+- [ ] 02-03: llms.txt Module — fetch, validate format, compute llms.txt score (LLMS-01, LLMS-02)
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 02-04: Concurrent Fetcher + Package Wiring — httpx.AsyncClient concurrent fetch with sequential fallback, __init__.py exports
+
+**Cross-cutting constraints:**
+- `RobotsResult` and `LlmsResult` appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
+- `fetch_access_signals(url)` from `src/checker.access_fetcher` is the public high-level Phase 2 API
+- Phase 5 scorer imports `RobotsResult` and `LlmsResult` for the access signals component
 
 ### Phase 3: Schema Extraction
 **Goal**: Structured data is extracted from page HTML and scored across 6 high-value schema types
@@ -120,7 +135,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation — Data Contracts + Crawler | 2/2 | Complete | - |
-| 2. Access Signals — robots.txt + llms.txt | 0/? | Not started | - |
+| 2. Access Signals — robots.txt + llms.txt | 0/4 | Planned | - |
 | 3. Schema Extraction | 0/? | Not started | - |
 | 4. Content Analysis | 0/? | Not started | - |
 | 5. Scorer + Report Generator | 0/? | Not started | - |
