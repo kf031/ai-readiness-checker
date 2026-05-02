@@ -113,8 +113,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CRAWL-01 | Phase 1 — Foundation | Pending |
-| CRAWL-02 | Phase 1 — Foundation | Pending |
+| CRAWL-01 | Phase 1 — Foundation | Verified |
+| CRAWL-02 | Phase 1 — Foundation | Verified |
 | BOT-01 | Phase 2 — Access Signals | Pending |
 | BOT-02 | Phase 2 — Access Signals | Pending |
 | LLMS-01 | Phase 2 — Access Signals | Pending |
