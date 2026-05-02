@@ -24,11 +24,17 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Success Criteria** (what must be TRUE):
   1. Any valid URL can be passed and the system returns parsed HTML with realistic browser headers and automatic redirect following
   2. Connection errors, timeouts (10s), and HTTP errors (4xx, 5xx) return a structured error result instead of crashing
-**Plans**: 2 plans
+**Plans**: 2 plans in 2 waves
 
-Plans:
-- [ ] 01-01-PLAN.md — Data Contracts + Project Setup (FetchResult/CrawlError dataclasses, pyproject.toml, package init)
-- [ ] 01-02-PLAN.md — Crawler Implementation + Test Suite (fetch_url() with SSRF prevention, pytest test coverage)
+**Wave 1** *(no dependencies)*
+- [ ] 01-01: Data Contracts + Project Setup — FetchResult/CrawlError dataclasses, pyproject.toml, package init
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 01-02: Crawler Implementation + Test Suite — fetch_url() with SSRF prevention, pytest test coverage
+
+**Cross-cutting constraints:**
+- All downstream modules (Phases 2-4) consume `FetchResult` and `CrawlError` from `src/checker/contracts.py`
+- `FetchResult.soup` is non-serializable — Phase 5 scorer must use `FetchResult.html` for JSON reports
 
 ### Phase 2: Access Signals — robots.txt + llms.txt
 **Goal**: AI bot access permissions and llms.txt presence are analyzed and scored for any website
@@ -113,7 +119,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation — Data Contracts + Crawler | 0/2 | Not started | - |
+| 1. Foundation — Data Contracts + Crawler | 2/2 | Planned | - |
 | 2. Access Signals — robots.txt + llms.txt | 0/? | Not started | - |
 | 3. Schema Extraction | 0/? | Not started | - |
 | 4. Content Analysis | 0/? | Not started | - |

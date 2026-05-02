@@ -404,22 +404,22 @@ def is_valid_http_url(url: str) -> bool:
 | A3 | The `contracts.py` module will define ALL phase contracts (not just Phase 1) | Architecture Patterns | If contracts are scattered across modules, the planner for future phases will need to locate them. Medium risk — the plan should explicitly note that `contracts.py` is the single source of truth. |
 | A4 | `FetchResult.soup` (BeautifulSoup object) is an appropriate field for a dataclass | Architecture Patterns | BeautifulSoup objects are large and non-serializable. If the contract needs to be serialized (JSON, pickle), this field would need to be excluded. Medium risk — Phase 5 report generation may need serialization; if so, remove `soup` from the contract and pass it separately. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should `FetchResult` include a parsed BeautifulSoup object, or just raw HTML?**
+1. **RESOLVED: Should `FetchResult` include a parsed BeautifulSoup object, or just raw HTML?**
    - What we know: Both Phase 3 (schema) and Phase 4 (content) need parsed HTML. Caching the parsed tree avoids re-parsing.
    - What's unclear: Whether the BeautifulSoup object should live in the contract or be created on-demand by each module. BS objects are stateful and not pickle-serializable.
-   - Recommendation: Include `soup` in `FetchResult` for now. It's the pragmatic choice — all four downstream modules need it. If serialization becomes necessary (Phase 5 report), the scorer can work with the raw `html` field.
+   - **RESOLVED:** Include `soup` in `FetchResult`. It's the pragmatic choice — all four downstream modules need it. If serialization becomes necessary (Phase 5 report), the scorer can work with the raw `html` field.
 
-2. **What User-Agent string should be the "realistic browser header"?**
+2. **RESOLVED: What User-Agent string should be the "realistic browser header"?**
    - What we know: The requirement says "realistic browser headers." The most common pattern is a recent Chrome User-Agent string.
    - What's unclear: Whether the User-Agent should be configurable, whether there should be rotation, or whether a single fixed string is sufficient.
-   - Recommendation: Use a single Chrome 131 User-Agent string (latest stable as of research). Make it a module-level constant for easy replacement. No rotation needed for single-URL analysis.
+   - **RESOLVED:** Use a single Chrome 131 User-Agent string (latest stable as of research). Make it a module-level constant for easy replacement. No rotation needed for single-URL analysis.
 
-3. **Should the crawler include response header metadata in FetchResult?**
+3. **RESOLVED: Should the crawler include response header metadata in FetchResult?**
    - What we know: v2 requirement CRAWL-03 asks for "response metadata (final URL after redirects, status code, headers)." Headers are the only piece not in the current FetchResult.
    - What's unclear: Whether to include headers now (forward-looking) or add in v2.
-   - Recommendation: Include `final_url` and `status_code` (needed for v1). Skip `headers` for now — they are a v2 requirement. Add a `# TODO: v2 — add response.headers dict` comment.
+   - **RESOLVED:** Include `final_url` and `status_code` (needed for v1). Skip `headers` for now — they are a v2 requirement. Add a `# TODO: v2 — add response.headers dict` comment.
 
 ## Environment Availability
 
