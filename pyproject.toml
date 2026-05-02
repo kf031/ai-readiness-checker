@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-readiness-checker"
+version = "0.1.0"
+description = "Open-source tool that scores any website's AI search engine visibility with CLI and Streamlit UI"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.32,<3.0",
+    "beautifulsoup4>=4.14,<5.0",
+    "lxml>=4.9,<7.0",
+    "spacy>=3.7,<4.0",
+    "textstat>=0.7,<1.0",
+    "extruct>=0.17,<1.0",
+    "rich>=13.0,<14.0",
+    "streamlit>=1.30,<2.0",
+    "pandas>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0,<9.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --tb=short"
