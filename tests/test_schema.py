@@ -147,7 +147,8 @@ def test_score_all_categories():
     score = compute_schema_score(
         {"Product", "FAQPage", "Organization", "BreadcrumbList", "Article", "AggregateRating"}
     )
-    assert score == 0.805, f"Expected 0.805, got {score}"
+    # Floating-point precision: 0.25+0.25+0.08+0.10+0.05+0.075 may not be exactly 0.805
+    assert score == pytest.approx(0.805), f"Expected ~0.805, got {score}"
 
 
 def test_score_zero():
