@@ -297,7 +297,10 @@ def test_recommendation_low_content_subscores():
         url="https://example.com",
         combined_score=0.3,
         readability_score=0.1,
+        text_ratio=0.8,
+        entity_score=0.8,
         heading_score=0.1,
+        qa_density_score=0.8,
     )
     recs = _content_recommendations(analysis)
     assert len(recs) == 2
