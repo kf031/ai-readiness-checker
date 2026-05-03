@@ -124,7 +124,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Plans**: 2 plans in 2 waves
 
 **Wave 1** *(no dependencies)*
-- [ ] 05-01: ScoreReport Dataclass + Core Scoring — ScoreReport in contracts.py, compute_overall_score, letter_grade, generate_report, 13 tests (SCORE-01, SCORE-02, SCORE-04 partial)
+- [x] 05-01: ScoreReport Dataclass + Core Scoring — ScoreReport in contracts.py, compute_overall_score, letter_grade, generate_report, 13 tests (SCORE-01, SCORE-02, SCORE-04 partial)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 05-02: Recommendation Generation — 4 per-module recommendation generators, priority sorting, wired into generate_report, 7 new tests (SCORE-03, SCORE-04 complete)
