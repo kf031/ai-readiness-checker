@@ -24,9 +24,9 @@
 
 ### Schema & Structured Data
 
-- [ ] **SCHEMA-01**: Tool extracts all structured data from the page HTML (JSON-LD, microdata, RDFa) using extruct
-- [ ] **SCHEMA-02**: Tool identifies which of the 6 high-value schema types are present: Product, FAQPage, Organization/LocalBusiness, BreadcrumbList, Article/BlogPosting, Review/AggregateRating
-- [ ] **SCHEMA-03**: Schema results produce a 0.0–1.0 score weighted by schema type importance (FAQPage and Product weighted highest for e-commerce)
+- [x] **SCHEMA-01**: Tool extracts all structured data from the page HTML (JSON-LD, microdata, RDFa) using extruct
+- [x] **SCHEMA-02**: Tool identifies which of the 6 high-value schema types are present: Product, FAQPage, Organization/LocalBusiness, BreadcrumbList, Article/BlogPosting, Review/AggregateRating
+- [x] **SCHEMA-03**: Schema results produce a 0.0–1.0 score weighted by schema type importance (FAQPage and Product weighted highest for e-commerce)
 
 ### Content Analysis
 
@@ -119,9 +119,9 @@
 | BOT-02 | Phase 2 — Access Signals | Verified |
 | LLMS-01 | Phase 2 — Access Signals | Verified |
 | LLMS-02 | Phase 2 — Access Signals | Verified |
-| SCHEMA-01 | Phase 3 — Schema Extraction | Planned |
-| SCHEMA-02 | Phase 3 — Schema Extraction | Planned |
-| SCHEMA-03 | Phase 3 — Schema Extraction | Planned |
+| SCHEMA-01 | Phase 3 — Schema Extraction | Verified |
+| SCHEMA-02 | Phase 3 — Schema Extraction | Verified |
+| SCHEMA-03 | Phase 3 — Schema Extraction | Verified |
 | CONT-01 | Phase 4 — Content Analysis | Pending |
 | CONT-02 | Phase 4 — Content Analysis | Pending |
 | CONT-03 | Phase 4 — Content Analysis | Pending |
