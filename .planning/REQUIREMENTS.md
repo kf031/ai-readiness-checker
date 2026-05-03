@@ -119,9 +119,9 @@
 | BOT-02 | Phase 2 — Access Signals | Verified |
 | LLMS-01 | Phase 2 — Access Signals | Verified |
 | LLMS-02 | Phase 2 — Access Signals | Verified |
-| SCHEMA-01 | Phase 3 — Schema Extraction | Pending |
-| SCHEMA-02 | Phase 3 — Schema Extraction | Pending |
-| SCHEMA-03 | Phase 3 — Schema Extraction | Pending |
+| SCHEMA-01 | Phase 3 — Schema Extraction | Planned |
+| SCHEMA-02 | Phase 3 — Schema Extraction | Planned |
+| SCHEMA-03 | Phase 3 — Schema Extraction | Planned |
 | CONT-01 | Phase 4 — Content Analysis | Pending |
 | CONT-02 | Phase 4 — Content Analysis | Pending |
 | CONT-03 | Phase 4 — Content Analysis | Pending |

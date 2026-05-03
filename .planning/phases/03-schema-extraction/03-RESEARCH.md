@@ -366,7 +366,7 @@ def compute_schema_score(
 | A2 | Uniform mode on RDFa works correctly for the 6 target types | State of the Art | extruct docs note RDFa uniform support is incomplete. If RDFa output for target types is malformed, we may miss types declared via RDFa. Mitigation: our type collector handles RDFa non-uniform output too (list of URIs). |
 | A3 | The 6 type categories (Product, FAQPage, Organization/LocalBusiness, BreadcrumbList, Article/BlogPosting, Review/AggregateRating) cover the most valuable schema types for AI search visibility | Architecture Patterns | These are defined in REQUIREMENTS.md SCHEMA-02. Adding or removing types is a simple config change. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should OpenGraph `og:type` contribute to the 6-type detection?**
    - What we know: OpenGraph types are lowercase strings like "product", "article", "website". These can indicate the page type.
