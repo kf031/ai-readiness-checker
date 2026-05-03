@@ -7,7 +7,7 @@ Every downstream module imports its input/output contracts from here.
 Phase 1: FetchResult, CrawlError
 Phase 2: RobotsResult, BotStatus, LlmsResult
 Phase 3: SchemaAnalysis
-Phase 4: (future) ContentAnalysis
+Phase 4: ContentAnalysis
 Phase 5: (future) ScoreReport
 """
 
@@ -131,6 +131,47 @@ class SchemaAnalysis:
     detected_types: set[str] = field(default_factory=set)
     type_details: dict[str, dict] = field(default_factory=dict)
     score: float = 0.0
+    fetched_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+@dataclass
+class ContentAnalysis:
+    """Complete content quality analysis result.
+
+    Consumed by Phase 5 scorer for the content component (35% weight).
+
+    Fields:
+        url: The URL whose content was analyzed
+        readability_score: Combined readability sub-score 0.0-1.0 (avg of Flesch + Fog)
+        text_ratio: Content-to-HTML ratio 0.0-1.0 (actual text vs markup)
+        entity_score: Named entity presence/diversity score 0.0-1.0
+        heading_score: Heading structure quality score 0.0-1.0
+        qa_density_score: Q&A density score 0.0-1.0
+        flesch_raw: Raw Flesch Reading Ease score (0-100+ scale, clamped to >=0)
+        fog_raw: Raw Gunning Fog Index grade level
+        raw_text_ratio: Raw plain_text_length / html_length ratio
+        entities: Dict mapping entity type (ORG/PRODUCT/GPE/PERSON) to list of text values
+        heading_analysis: Dict with heading counts, H1 uniqueness, hierarchy violations, descriptiveness
+        qa_analysis: Dict with question_count, answer_count, total_sentences
+        combined_score: Weighted combined score 0.0-1.0 (equal weight sub-signals per planner discretion)
+        fetched_at: Timestamp of analysis
+    """
+
+    url: str
+    readability_score: float = 0.0
+    text_ratio: float = 0.0
+    entity_score: float = 0.0
+    heading_score: float = 0.0
+    qa_density_score: float = 0.0
+    flesch_raw: float = 0.0
+    fog_raw: float = 0.0
+    raw_text_ratio: float = 0.0
+    entities: dict[str, list[str]] = field(default_factory=dict)
+    heading_analysis: dict = field(default_factory=dict)
+    qa_analysis: dict = field(default_factory=dict)
+    combined_score: float = 0.0
     fetched_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
