@@ -40,6 +40,101 @@ SSRF_PRIVATE_URL = "http://10.0.0.1"
 NON_ROUTABLE_URL = "http://thishostdefinitelydoesnotexist.invalid"
 
 
+
+# -- robots.txt text fixtures (Phase 2) --
+
+ROBOTS_TXT_ALL_ALLOWED = """User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: Amazonbot
+Allow: /
+"""
+
+ROBOTS_TXT_ALL_BLOCKED = """User-agent: GPTBot
+Disallow: /
+User-agent: ClaudeBot
+Disallow: /
+User-agent: PerplexityBot
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: Google-Extended
+Disallow: /
+User-agent: Applebot-Extended
+Disallow: /
+User-agent: Amazonbot
+Disallow: /
+"""
+
+ROBOTS_TXT_MIXED = """User-agent: GPTBot
+Disallow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: *
+Disallow: /
+"""
+
+ROBOTS_TXT_CATCHALL = """User-agent: *
+Disallow: /admin
+Allow: /
+"""
+
+ROBOTS_TXT_EMPTY = """"""
+
+ROBOTS_TXT_CASE_VARIANT = """User-agent: gptbot
+Allow: /
+User-agent: CLAUDEBOT
+Disallow: /
+"""
+
+# -- llms.txt text fixtures (Phase 2) --
+
+LLMS_TXT_VALID = """# Example Site LLMs Documentation
+
+> This site provides information for AI language models.
+
+This is the body text.
+
+## API Docs
+- [API Reference](/api) — Complete API documentation
+- [SDK Guide](/sdk) — SDK installation and usage
+
+## Data Sets
+- [Training Data](/data/v1) — Version 1 training corpus
+- [Validation Set](/data/val) — Validation data
+"""
+
+LLMS_TXT_NO_H1 = """This file has no heading.
+
+## File List
+- [File 1](/file1)
+"""
+
+LLMS_TXT_H1_ONLY = """# Just a heading
+No sections below.
+"""
+
+LLMS_TXT_H2_NO_LINKS = """# Site Documentation
+
+## Empty Section
+This section has no links at all.
+
+## Another Section
+Still no links.
+"""
+
+
 # -- Fixtures for mock requests responses --
 
 @pytest.fixture
