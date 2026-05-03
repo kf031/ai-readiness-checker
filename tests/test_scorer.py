@@ -219,3 +219,141 @@ def test_all_blocked_score():
     assert report.module_breakdown["robots"]["score"] == 0.01
     assert isinstance(report.overall_score, float)
     assert report.overall_score >= 0.0
+
+
+# ----- SCORE-03: Recommendation generation -----
+
+
+def test_recommendation_blocked_gptbot():
+    """SCORE-03: RobotsResult with blocked GPTBot generates specific
+    MEDIUM recommendation."""
+    from src.checker.scorer import _robot_recommendations
+
+    result = RobotsResult(
+        url="https://example.com",
+        exists=True,
+        bots=[BotStatus(bot_name="GPTBot", status="blocked")],
+    )
+    recs = _robot_recommendations(result)
+    assert len(recs) == 1
+    assert recs[0]["priority"] == "MEDIUM"
+    assert recs[0]["module"] == "robots"
+    assert "GPTBot" in recs[0]["message"]
+    assert "blocked" in recs[0]["message"]
+
+
+def test_recommendation_missing_robots():
+    """SCORE-03: RobotsResult with exists=False generates HIGH
+    recommendation about missing robots.txt."""
+    from src.checker.scorer import _robot_recommendations
+
+    result = RobotsResult(url="https://example.com", exists=False)
+    recs = _robot_recommendations(result)
+    assert len(recs) == 1
+    assert recs[0]["priority"] == "HIGH"
+    assert recs[0]["module"] == "robots"
+    assert "No robots.txt found" in recs[0]["message"]
+
+
+def test_recommendation_missing_llms():
+    """SCORE-03: LlmsResult with found=False generates HIGH
+    recommendation about missing llms.txt."""
+    from src.checker.scorer import _llms_recommendations
+
+    result = LlmsResult(url="https://example.com", found=False)
+    recs = _llms_recommendations(result)
+    assert len(recs) == 1
+    assert recs[0]["priority"] == "HIGH"
+    assert recs[0]["module"] == "llms_txt"
+    assert "No llms.txt found" in recs[0]["message"]
+
+
+def test_recommendation_missing_schema_types():
+    """SCORE-03: SchemaAnalysis with low score and missing Product,
+    FAQPage types generates MEDIUM recommendations for both."""
+    from src.checker.scorer import _schema_recommendations
+
+    analysis = SchemaAnalysis(
+        url="https://example.com",
+        score=0.3,
+        detected_types={"Organization"},
+    )
+    recs = _schema_recommendations(analysis)
+    assert len(recs) == 2
+    for rec in recs:
+        assert rec["priority"] == "MEDIUM"
+        assert rec["module"] == "schema"
+    messages = [r["message"] for r in recs]
+    assert any("Product" in m for m in messages)
+    assert any("FAQPage" in m for m in messages)
+
+
+def test_recommendation_low_content_subscores():
+    """SCORE-03: ContentAnalysis with low readability and heading
+    subscores generates targeted MEDIUM recommendations."""
+    from src.checker.scorer import _content_recommendations
+
+    analysis = ContentAnalysis(
+        url="https://example.com",
+        combined_score=0.3,
+        readability_score=0.1,
+        heading_score=0.1,
+    )
+    recs = _content_recommendations(analysis)
+    assert len(recs) == 2
+    for rec in recs:
+        assert rec["priority"] == "MEDIUM"
+        assert rec["module"] == "content"
+    messages = [r["message"] for r in recs]
+    assert any("readability" in m.lower() for m in messages)
+    assert any("heading" in m.lower() for m in messages)
+
+
+def test_recommendation_priority_sorting():
+    """SCORE-03: generate_recommendations sorts by priority: all HIGH
+    before all MEDIUM before all LOW."""
+    from src.checker.scorer import generate_recommendations
+
+    robots_result = RobotsResult(
+        url="https://example.com",
+        exists=True,
+        bots=[BotStatus(bot_name="GPTBot", status="blocked")],
+    )
+    llms_result = LlmsResult(url="https://example.com", found=False)
+    schema_analysis = SchemaAnalysis(
+        url="https://example.com",
+        score=0.3,
+        detected_types=set(),
+    )
+    content_analysis = ContentAnalysis(
+        url="https://example.com", combined_score=0.8
+    )
+
+    recs = generate_recommendations(
+        robots_result, llms_result, schema_analysis, content_analysis
+    )
+
+    priorities = [r["priority"] for r in recs]
+    for i, p in enumerate(priorities):
+        if p == "MEDIUM":
+            remaining = priorities[i:]
+            assert all(pp in ("MEDIUM", "LOW") for pp in remaining), (
+                f"HIGH found after MEDIUM at index {i}"
+            )
+            break
+
+
+def test_no_recommendations_for_perfect_module():
+    """SCORE-03: schema score >= 0.7 returns empty list; content
+    combined_score >= 0.6 returns empty list."""
+    from src.checker.scorer import _content_recommendations, _schema_recommendations
+
+    good_schema = SchemaAnalysis(
+        url="https://example.com",
+        score=0.85,
+        detected_types={"Product", "FAQPage", "Organization"},
+    )
+    assert _schema_recommendations(good_schema) == []
+
+    good_content = ContentAnalysis(url="https://example.com", combined_score=0.7)
+    assert _content_recommendations(good_content) == []
