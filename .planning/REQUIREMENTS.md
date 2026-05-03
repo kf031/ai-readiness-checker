@@ -30,12 +30,12 @@
 
 ### Content Analysis
 
-- [ ] **CONT-01**: Tool computes readability of page text using textstat (Flesch Reading Ease + Gunning Fog Index) and scores the result
-- [ ] **CONT-02**: Tool calculates content-to-HTML ratio (plain text length / total HTML length) to detect thin or boilerplate-heavy pages
-- [ ] **CONT-03**: Tool uses spaCy (en_core_web_sm) to extract named entities (ORG, PRODUCT, GPE, PERSON) and scores how clearly the page identifies what it is about
-- [ ] **CONT-04**: Tool analyzes heading structure: checks H1 uniqueness, H2/H3 hierarchy logic, and whether headings are descriptive (>3 words)
-- [ ] **CONT-05**: Tool scores Q&A density: counts question sentences, question-style headings, and sentences that directly follow questions
-- [ ] **CONT-06**: Content module produces a combined 0.0–1.0 score from all sub-signals
+- [x] **CONT-01**: Tool computes readability of page text using textstat (Flesch Reading Ease + Gunning Fog Index) and scores the result
+- [x] **CONT-02**: Tool calculates content-to-HTML ratio (plain text length / total HTML length) to detect thin or boilerplate-heavy pages
+- [x] **CONT-03**: Tool uses spaCy (en_core_web_sm) to extract named entities (ORG, PRODUCT, GPE, PERSON) and scores how clearly the page identifies what it is about
+- [x] **CONT-04**: Tool analyzes heading structure: checks H1 uniqueness, H2/H3 hierarchy logic, and whether headings are descriptive (>3 words)
+- [x] **CONT-05**: Tool scores Q&A density: counts question sentences, question-style headings, and sentences that directly follow questions
+- [x] **CONT-06**: Content module produces a combined 0.0–1.0 score from all sub-signals
 
 ### Scoring & Report
 
@@ -65,12 +65,45 @@
 
 ---
 
-## v2 Requirements
+## v2 Requirements — LLM Advisor Agent
+
+### Skill-Calling Agent
+
+- **AGENT-01**: Agent receives the v1 score report + original HTML and decides which fix skills to invoke based on failing modules (schema < 0.5, headings < 0.5, etc.)
+- **AGENT-02**: Agent merges all skill outputs into a single improved HTML page and invokes render + explanation skills for final output
+- **AGENT-03**: Agent loop is model-agnostic — initially powered by Claude Code skills, later by standalone LLM backends (Ollama, Anthropic, OpenAI)
+
+### Fix Skills (Modular)
+
+- **FIX-01**: fix-schema — generates missing JSON-LD blocks for schema types flagged as absent in the report
+- **FIX-02**: fix-headings — restructures H1/H2/H3 hierarchy, merges duplicate H1s, makes headings descriptive
+- **FIX-03**: fix-readability — rewrites dense paragraphs for lower reading grade level
+- **FIX-04**: fix-qa — adds Q&A sections derived from existing content where Q&A density is low
+- **FIX-05**: fix-llms-txt — generates a valid llms.txt file based on page content
+
+### Output Skills
+
+- **OUT-01**: render-preview — takes original + improved HTML and produces a visual before/after comparison
+- **OUT-02**: explain-changes — produces a plain-English summary of every change made and why
+
+### Skill Ecosystem
+
+- **ECO-01**: Skills follow a standard contract (report + HTML in, changed HTML + changes list out) so third parties can add custom skills
+- **ECO-02**: Skills are self-contained files in a `skills/` directory, discoverable by the agent at runtime
+
+### LLM Backend
+
+- **LLM-01**: Default backend is Claude Code skills (zero additional deps for Claude Code users)
+- **LLM-02**: Standalone backends (Ollama local, Anthropic API, OpenAI API) added in v3
+- **LLM-03**: v1 deterministic pipeline runs unchanged; LLM phase is optional (`--fix` flag / "Improve My Site" button)
+
+---
+## v3 Requirements — Distribution & Scale
 
 ### Output
 
-- **OUT-01**: Tool can save full report as a JSON file for programmatic use
-- **OUT-02**: Batch URL analysis via CSV upload
+- **OUT-03**: Tool can save full report as a JSON file for programmatic use
+- **OUT-04**: Batch URL analysis via CSV upload
 
 ### Crawler
 
@@ -83,6 +116,11 @@
 ### llms.txt
 
 - **LLMS-03**: Also check for `/llms-full.txt` and include in score
+
+### Standalone LLM Backend
+
+- **LLM-04**: Ollama integration with a recommended small model (e.g., Llama 3.2 3B) for fully offline use
+- **LLM-05**: Optional API provider support (Anthropic, OpenAI) via env vars or config file
 
 ### Deployment & Distribution
 
@@ -97,11 +135,10 @@
 
 | Feature | Reason |
 |---------|--------|
-| LLM API calls (OpenAI, Anthropic, etc.) | Key differentiator is LLM-free; keeps tool free and reproducible |
-| User accounts / authentication | Not needed for open-source single-URL tool |
-| Database / persistence layer | No state needed in v1; each run is stateless |
-| JavaScript rendering (Selenium/Playwright) | Adds complexity; handle in v2 if JS-only sites are a pain point |
-| Multi-page crawling | v1 analyzes one URL; site-wide crawl is a v2 feature |
+| User accounts / authentication | Not needed for open-source tool |
+| Database / persistence layer | No state needed; each run is stateless |
+| JavaScript rendering (Selenium/Playwright) | Adds complexity; handle in v3 if JS-only sites are a pain point |
+| Multi-page crawling | v1 analyzes one URL; site-wide crawl is a v3 feature |
 | HuggingFace dataset publishing | Post-launch activity |
 | Train a citation classifier | Research project; far beyond v1 scope |
 
@@ -109,7 +146,7 @@
 
 ## Traceability
 
-*Updated: 2026-05-02 during roadmap creation.*
+*Updated: 2026-05-03 — v2/v3 plan restructured: LLM Advisor Agent moved to v2, distribution & scale deferred to v3.*
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
@@ -122,12 +159,12 @@
 | SCHEMA-01 | Phase 3 — Schema Extraction | Verified |
 | SCHEMA-02 | Phase 3 — Schema Extraction | Verified |
 | SCHEMA-03 | Phase 3 — Schema Extraction | Verified |
-| CONT-01 | Phase 4 — Content Analysis | Pending |
-| CONT-02 | Phase 4 — Content Analysis | Pending |
-| CONT-03 | Phase 4 — Content Analysis | Pending |
-| CONT-04 | Phase 4 — Content Analysis | Pending |
-| CONT-05 | Phase 4 — Content Analysis | Pending |
-| CONT-06 | Phase 4 — Content Analysis | Pending |
+| CONT-01 | Phase 4 — Content Analysis | Verified |
+| CONT-02 | Phase 4 — Content Analysis | Verified |
+| CONT-03 | Phase 4 — Content Analysis | Verified |
+| CONT-04 | Phase 4 — Content Analysis | Verified |
+| CONT-05 | Phase 4 — Content Analysis | Verified |
+| CONT-06 | Phase 4 — Content Analysis | Verified |
 | SCORE-01 | Phase 5 — Scorer + Report | Pending |
 | SCORE-02 | Phase 5 — Scorer + Report | Pending |
 | SCORE-03 | Phase 5 — Scorer + Report | Pending |
@@ -142,3 +179,29 @@
 | TEST-01 | Phase 8 — Test Suite | Pending |
 | TEST-02 | Phase 8 — Test Suite | Pending |
 | TEST-03 | Phase 8 — Test Suite | Pending |
+| AGENT-01 | v2 — LLM Advisor Agent | Planned |
+| AGENT-02 | v2 — LLM Advisor Agent | Planned |
+| AGENT-03 | v2 — LLM Advisor Agent | Planned |
+| FIX-01 | v2 — Fix Skills | Planned |
+| FIX-02 | v2 — Fix Skills | Planned |
+| FIX-03 | v2 — Fix Skills | Planned |
+| FIX-04 | v2 — Fix Skills | Planned |
+| FIX-05 | v2 — Fix Skills | Planned |
+| OUT-01 | v2 — Output Skills | Planned |
+| OUT-02 | v2 — Output Skills | Planned |
+| ECO-01 | v2 — Skill Ecosystem | Planned |
+| ECO-02 | v2 — Skill Ecosystem | Planned |
+| LLM-01 | v2 — LLM Backend | Planned |
+| LLM-02 | v2 — LLM Backend | Planned |
+| LLM-03 | v2 — LLM Backend | Planned |
+| OUT-03 | v3 — Output | Planned |
+| OUT-04 | v3 — Output | Planned |
+| CRAWL-03 | v3 — Crawler | Planned |
+| BOT-03 | v3 — Bot Access | Planned |
+| LLMS-03 | v3 — llms.txt | Planned |
+| LLM-04 | v3 — Standalone LLM | Planned |
+| LLM-05 | v3 — Standalone LLM | Planned |
+| DIST-01 | v3 — Deployment | Planned |
+| DIST-02 | v3 — Deployment | Planned |
+| DIST-03 | v3 — Deployment | Planned |
+| DIST-04 | v3 — Deployment | Planned |

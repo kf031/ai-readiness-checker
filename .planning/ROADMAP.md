@@ -9,7 +9,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 - [x] **Phase 1: Foundation — Data Contracts + Crawler** - Type-safe data contracts for all inter-module communication, plus URL fetching with realistic headers and graceful error handling
 - [x] **Phase 2: Access Signals — robots.txt + llms.txt** - AI bot access analysis for 7 bots and llms.txt presence detection
 - [x] **Phase 3: Schema Extraction** - Structured data extraction and weighted scoring across 6 high-value schema types
-- [ ] **Phase 4: Content Analysis** - NLP-based content quality analysis (readability, entities, headings, Q&A density)
+- [x] **Phase 4: Content Analysis** - NLP-based content quality analysis (readability, entities, headings, Q&A density)
 - [ ] **Phase 5: Scorer + Report Generator** - Weighted composite scoring with A-F grade and prioritized recommendations
 - [ ] **Phase 6: Pipeline Orchestrator + CLI** - Full pipeline wired into a single terminal command with rich-formatted output
 - [ ] **Phase 7: Streamlit Dashboard** - Interactive web UI for URL input, score visualization, and result exploration
@@ -97,13 +97,13 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Plans**: 3 plans in 3 waves
 
 **Wave 1** *(no dependencies)*
-- [ ] 04-01: Data Contracts + Dependencies + Test Scaffolding — ContentAnalysis dataclass, NLP deps install, HTML fixtures, test stubs, exports (CONT-06)
+- [x] 04-01: Data Contracts + Dependencies + Test Scaffolding — ContentAnalysis dataclass, NLP deps install, HTML fixtures, test stubs, exports (CONT-06)
 
 **Wave 2** *(blocked on Wave 1)*
-- [ ] 04-02: Content Analyzer — Readability, Text Ratio, Entities — score_readability, score_text_ratio, extract_entities, score_entities, CONT-01/CONT-02/CONT-03 tests (CONT-01, CONT-02, CONT-03)
+- [x] 04-02: Content Analyzer — Readability, Text Ratio, Entities — score_readability, score_text_ratio, extract_entities, score_entities, CONT-01/CONT-02/CONT-03 tests (CONT-01, CONT-02, CONT-03)
 
 **Wave 3** *(blocked on Wave 2)*
-- [ ] 04-03: Content Analyzer — Headings, QA Density, Combined Score — analyze_headings, analyze_qa_density, compute_combined_score, analyze_content orchestrator, all tests green, package wiring (CONT-04, CONT-05, CONT-06)
+- [x] 04-03: Content Analyzer — Headings, QA Density, Combined Score — analyze_headings, analyze_qa_density, compute_combined_score, analyze_content orchestrator, all tests green, package wiring (CONT-04, CONT-05, CONT-06)
 
 **Cross-cutting constraints:**
 - `ContentAnalysis` dataclass appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
@@ -165,7 +165,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Foundation — Data Contracts + Crawler | 2/2 | Complete | - |
 | 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
-| 4. Content Analysis | 0/3 | Not started | - |
+| 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
 | 5. Scorer + Report Generator | 0/? | Not started | - |
 | 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
 | 7. Streamlit Dashboard | 0/? | Not started | - |
