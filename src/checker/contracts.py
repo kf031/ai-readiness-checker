@@ -177,4 +177,32 @@ class ContentAnalysis:
     )
 
 
+@dataclass
+class ScoreReport:
+    """Complete scored AI-readiness report combining all four analysis modules.
+
+    Consumed by Phase 6 (CLI) and Phase 7 (Streamlit Dashboard).
+
+    Fields:
+        url: The URL that was analyzed.
+        overall_score: Weighted 0-100 overall score (float, 1 decimal place).
+        grade: Letter grade A-F derived from overall_score.
+        module_breakdown: Dict mapping module key to dict with keys:
+            "score" (float, 0.0-1.0), "weight" (float), "weighted" (float, 0-100).
+        recommendations: List of recommendation dicts. Each dict has keys:
+            "priority" (str: "HIGH"/"MEDIUM"/"LOW"), "module" (str), "message" (str).
+            Empty list when recommendations are not yet implemented (Plan 02).
+        timestamp: UTC datetime of report generation.
+    """
+
+    url: str
+    overall_score: float = 0.0
+    grade: str = "F"
+    module_breakdown: dict = field(default_factory=dict)
+    recommendations: list = field(default_factory=list)
+    timestamp: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
 # TODO: v2 — CRAWL-03: add response.headers dict to FetchResult
