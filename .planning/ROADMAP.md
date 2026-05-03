@@ -121,7 +121,20 @@ Build an open-source Python tool that scores any website's AI search engine visi
   2. User sees an A-F letter grade corresponding to their score range (A: 85-100, B: 70-84, C: 55-69, D: 40-54, F: 0-39)
   3. User receives prioritized plain-English recommendations specific to which checks failed (e.g., "GPTBot is blocked in your robots.txt")
   4. User receives a structured report dict containing url, overall_score, grade, per-module breakdown with weights, recommendations, and timestamp
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
+
+**Wave 1** *(no dependencies)*
+- [ ] 05-01: ScoreReport Dataclass + Core Scoring — ScoreReport in contracts.py, compute_overall_score, letter_grade, generate_report, 13 tests (SCORE-01, SCORE-02, SCORE-04 partial)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 05-02: Recommendation Generation — 4 per-module recommendation generators, priority sorting, wired into generate_report, 7 new tests (SCORE-03, SCORE-04 complete)
+
+**Cross-cutting constraints:**
+- `ScoreReport` dataclass appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
+- `generate_report(url, robots_result, llms_result, schema_analysis, content_analysis)` from `src/checker.scorer` is the public high-level Phase 5 API
+- Scorer imports `compute_bot_score` from `robots_txt` and `compute_llms_score` from `llms_txt` — does NOT re-implement scoring logic
+- Robots score range [0.01, 0.99] flows through without rescaling (max overall = 99.8)
+- Phase 6 (CLI) and Phase 7 (Streamlit) consume `ScoreReport` dataclass via `src/checker.scorer.generate_report`
 
 ### Phase 6: Pipeline Orchestrator + CLI
 **Goal**: The full analysis pipeline runs from a single terminal command producing a rich-formatted score card
@@ -166,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
-| 5. Scorer + Report Generator | 0/? | Not started | - |
+| 5. Scorer + Report Generator | 0/2 | Planned | - |
 | 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
 | 7. Streamlit Dashboard | 0/? | Not started | - |
 | 8. Test Suite | 0/? | Not started | - |
