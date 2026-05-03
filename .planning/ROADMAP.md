@@ -143,7 +143,20 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Success Criteria** (what must be TRUE):
   1. User can run `python -m checker <url>` from the terminal and see a complete formatted score card
   2. CLI output includes colored grade, per-module score bars, and recommendations using rich library formatting
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
+
+**Wave 1** *(no dependencies — parallel)*
+- [ ] 06-01: Pipeline Orchestrator — run_pipeline() wiring all 5 phases with CrawlError branching and module failure recovery
+- [ ] 06-02: CLI Renderer — Rich-formatted score card with colored grade, per-module bars, and prioritized recommendations
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06-03: CLI Entry Point — __main__.py with argparse, python -m checker <url> command
+
+**Cross-cutting constraints:**
+- orchestrator.py imports existing modules (crawler, access_fetcher, schema_analyzer, content_analyzer, scorer) — does NOT re-implement any analysis logic
+- cli_renderer.py consumes ScoreReport dataclass via pipeline result dict — pure presentation layer
+- __main__.py delegates to orchestrator.run_pipeline() then cli_renderer.display_score_card() — thin entry point
+- Phase 7 (Streamlit) consumes the same run_pipeline() function and ScoreReport dataclass
 
 ### Phase 7: Streamlit Dashboard
 **Goal**: Interactive web UI for running the analysis pipeline and exploring detailed results
@@ -180,6 +193,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
 | 5. Scorer + Report Generator | 2/2 | Complete | 2026-05-04 |
-| 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
+| 6. Pipeline Orchestrator + CLI | 0/3 | Planned | - |
 | 7. Streamlit Dashboard | 0/? | Not started | - |
 | 8. Test Suite | 0/? | Not started | - |
