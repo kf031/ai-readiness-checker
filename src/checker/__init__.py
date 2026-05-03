@@ -4,6 +4,7 @@ AI Readiness Checker — scores any website's AI search engine visibility.
 Phase 1: FetchResult, CrawlError (data contracts + crawler)
 Phase 2: RobotsResult, BotStatus, LlmsResult, fetch_access_signals (access signals)
 Phase 3: SchemaAnalysis, analyze_schema (schema extraction)
+Phase 4: ContentAnalysis, analyze_content (content analysis)
 """
 
 # Phase 1 exports
@@ -18,8 +19,14 @@ from src.checker.access_fetcher import fetch_access_signals
 # Phase 3 exports — data contracts
 from src.checker.contracts import SchemaAnalysis
 
+# Phase 4 exports — data contracts
+from src.checker.contracts import ContentAnalysis
+
 # Phase 3 exports — high-level API
 from src.checker.schema_analyzer import analyze_schema
+
+# Phase 4 exports — high-level API
+# (analyze_content added in Plan 04-03)
 
 __all__ = [
     "FetchResult",
@@ -30,4 +37,5 @@ __all__ = [
     "fetch_access_signals",
     "SchemaAnalysis",
     "analyze_schema",
+    "ContentAnalysis",
 ]
