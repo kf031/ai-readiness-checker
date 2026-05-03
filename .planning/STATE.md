@@ -1,19 +1,19 @@
 ---
-phase: 1
-status: In progress — executing Phase 1
+phase: 2
+status: Ready to execute — Phase 2 planned
 ---
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation — Data Contracts + Crawler)
-Plan: 2 of 2 — Both plans complete
-Status: Complete
-Last activity: 2026-05-02 — Phase 1 complete (2 plans, 21 tests, CRAWL-01/CRAWL-02 verified)
+Phase: 2 of 8 (Access Signals — robots.txt + llms.txt)
+Plans: 4 of 4 — Complete
+Status: Ready to execute
+Last activity: 2026-05-03 — Phase 2 planning complete (4 plans, 3 waves, verified)
 
-Progress: [████░░░░░░] 25%
+Progress: [████░░░░░░] 37.5%
 
 ## Session Continuity
 
-Last session: 2026-05-02
-Stopped at: Phase 1 execution complete; verification in progress
+Last session: 2026-05-03
+Stopped at: Phase 2 planning complete; ready for execution
 Resume file: None

@@ -20,7 +20,7 @@
 ### llms.txt
 
 - [ ] **LLMS-01**: Tool checks for a `/llms.txt` file at the site root and reports whether it was found, with a 500-character content preview if present
-- [ ] **LLMS-02**: llms.txt result produces a binary score: found = 1.0, not found = 0.0
+- [ ] **LLMS-02**: llms.txt result produces a score: valid format = 1.0, malformed = 0.3, missing = 0.0
 
 ### Schema & Structured Data
 
