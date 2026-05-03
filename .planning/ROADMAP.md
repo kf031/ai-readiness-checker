@@ -70,7 +70,19 @@ Build an open-source Python tool that scores any website's AI search engine visi
   1. User can see all structured data extracted from JSON-LD, microdata, and RDFa in the page
   2. User sees which of the 6 schema types are present: Product, FAQPage, Organization/LocalBusiness, BreadcrumbList, Article/BlogPosting, Review/AggregateRating
   3. User receives a 0.0-1.0 schema score weighted by type importance (FAQPage and Product weighted highest for e-commerce)
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
+
+**Wave 1** *(no dependencies)*
+- [ ] 03-01: Data Contracts + Test Scaffolding — SchemaAnalysis dataclass, 8 HTML fixtures, 16 test stubs
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 03-02: Schema Analyzer Implementation — extract_structured_data, collect_schema_types, compute_schema_score, analyze_schema, __init__.py wiring
+
+**Cross-cutting constraints:**
+- `SchemaAnalysis` dataclass appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
+- `analyze_schema(fetch_result)` from `src/checker.schema_analyzer` is the public high-level Phase 3 API
+- extruct configured with `errors="log"` for production safety — malformed JSON-LD does not crash extraction
+- Phase 5 scorer imports `SchemaAnalysis` and calls `analyze_schema()` for the schema component (30% weight)
 
 ### Phase 4: Content Analysis
 **Goal**: Page content quality is analyzed via NLP across readability, entities, heading structure, and Q&A density, producing a combined content score
@@ -136,7 +148,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Foundation — Data Contracts + Crawler | 2/2 | Complete | - |
 | 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
-| 3. Schema Extraction | 0/? | Not started | - |
+| 3. Schema Extraction | 0/2 | Not started | - |
 | 4. Content Analysis | 0/? | Not started | - |
 | 5. Scorer + Report Generator | 0/? | Not started | - |
 | 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
