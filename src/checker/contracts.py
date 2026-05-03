@@ -6,7 +6,7 @@ Every downstream module imports its input/output contracts from here.
 
 Phase 1: FetchResult, CrawlError
 Phase 2: RobotsResult, BotStatus, LlmsResult
-Phase 3: (future) SchemaAnalysis
+Phase 3: SchemaAnalysis
 Phase 4: (future) ContentAnalysis
 Phase 5: (future) ScoreReport
 """
@@ -102,6 +102,35 @@ class LlmsResult:
     validation_errors: list[str] = field(default_factory=list)  # Format violations
     content_preview: Optional[str] = None  # First 500 chars if found (None if not)
     raw_text: Optional[str] = None  # Full llms.txt content (None if not found)
+    fetched_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+@dataclass
+class SchemaAnalysis:
+    """Complete schema extraction analysis result.
+
+    Consumed by Phase 5 scorer for the schema component (30% weight).
+
+    Fields:
+        url: The URL whose HTML was analyzed
+        raw: Format-name keys to lists of extracted structured data items.
+             Keys: "json-ld", "microdata", "opengraph", "rdfa"
+        detected_types: Set of concrete schema.org type names found
+            (e.g., {"Product", "FAQPage", "Organization", "BreadcrumbList"})
+        type_details: Per-detected-type metadata mapping type name to dict
+            with "count" (int) and "formats" (list of format name strings
+            where the type was found)
+        score: Weighted schema score in 0.0-1.0 range
+        fetched_at: Timestamp of analysis
+    """
+
+    url: str
+    raw: dict[str, list] = field(default_factory=dict)
+    detected_types: set[str] = field(default_factory=set)
+    type_details: dict[str, dict] = field(default_factory=dict)
+    score: float = 0.0
     fetched_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
