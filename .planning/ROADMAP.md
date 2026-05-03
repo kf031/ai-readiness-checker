@@ -94,7 +94,23 @@ Build an open-source Python tool that scores any website's AI search engine visi
   3. User can see named entities extracted from the page (organizations, products, locations, people)
   4. User sees heading structure analysis covering H1 uniqueness, H2/H3 hierarchy logic, and heading descriptiveness
   5. User sees a Q&A density score and receives a combined 0.0-1.0 content quality score from all sub-signals
-**Plans**: TBD
+**Plans**: 3 plans in 3 waves
+
+**Wave 1** *(no dependencies)*
+- [ ] 04-01: Data Contracts + Dependencies + Test Scaffolding — ContentAnalysis dataclass, NLP deps install, HTML fixtures, test stubs, exports (CONT-06)
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 04-02: Content Analyzer — Readability, Text Ratio, Entities — score_readability, score_text_ratio, extract_entities, score_entities, CONT-01/CONT-02/CONT-03 tests (CONT-01, CONT-02, CONT-03)
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 04-03: Content Analyzer — Headings, QA Density, Combined Score — analyze_headings, analyze_qa_density, compute_combined_score, analyze_content orchestrator, all tests green, package wiring (CONT-04, CONT-05, CONT-06)
+
+**Cross-cutting constraints:**
+- `ContentAnalysis` dataclass appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
+- `analyze_content(fetch_result)` from `src/checker.content_analyzer` is the public high-level Phase 4 API
+- spaCy model `en_core_web_sm` must be downloaded as a post-install step (not pip-installable)
+- Content analyzer uses `FetchResult.soup` for text extraction (not double-parsing)
+- Phase 5 scorer imports `ContentAnalysis` and calls `analyze_content()` for the content component (35% weight)
 
 ### Phase 5: Scorer + Report Generator
 **Goal**: All four module scores combine into a weighted final score with letter grade and prioritized plain-English recommendations
@@ -149,7 +165,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Foundation — Data Contracts + Crawler | 2/2 | Complete | - |
 | 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
-| 4. Content Analysis | 0/? | Not started | - |
+| 4. Content Analysis | 0/3 | Not started | - |
 | 5. Scorer + Report Generator | 0/? | Not started | - |
 | 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
 | 7. Streamlit Dashboard | 0/? | Not started | - |
