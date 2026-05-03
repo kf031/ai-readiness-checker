@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
-| 5. Scorer + Report Generator | 0/2 | Planned | - |
+| 5. Scorer + Report Generator | 2/2 | Planned | 2026-05-03 |
 | 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
 | 7. Streamlit Dashboard | 0/? | Not started | - |
 | 8. Test Suite | 0/? | Not started | - |

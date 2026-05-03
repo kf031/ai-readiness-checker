@@ -369,19 +369,19 @@ def letter_grade(overall_score: float) -> str:
 | A4 | The scorer receives all four module results pre-computed -- it does not orchestrate the analysis pipeline | Architecture | Low. Phase 6 (Pipeline + CLI) is responsible for orchestration. The scorer is a pure function of its inputs. |
 | A5 | SchemaAnalysis.score and ContentAnalysis.combined_score are always valid floats in [0.0, 1.0] | Integration Points | Low. These are set by constructors with default 0.0 and never produce NaN/Inf. Verified by inspection of analyzer code. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should the scorer handle fetch errors differently in the robots/llms.txt modules?**
+1. **RESOLVED — Should the scorer handle fetch errors differently in the robots/llms.txt modules?**
    - What we know: `compute_bot_score([])` returns 0.5 (neutral baseline). `compute_llms_score(False, None)` returns 0.0.
    - What's unclear: Whether a timeout/connection error should produce a different score than "file not found" (404). Currently both result in `exists=False` with empty bots / not-found llms.
    - Recommendation: Treat them the same for scoring (0.5 baseline for robots, 0.0 for llms), but differentiate in the module breakdown and recommendations. This keeps scoring simple while still communicating "we tried but couldn't check" to the user.
 
-2. **What recommendation threshold values are appropriate for content sub-scores?**
+2. **RESOLVED — What recommendation threshold values are appropriate for content sub-scores?**
    - What we know: ContentAnalysis has 5 sub-scores (readability, text_ratio, entities, headings, qa_density), each 0.0-1.0.
    - What's unclear: At what threshold should each sub-score trigger a recommendation? 0.3 feels reasonable for most (below 30% of ideal), but heading score at 0.0 (no headings at all) vs 0.3 (suboptimal headings) might warrant different messages.
    - Recommendation: Start with 0.3 as the universal threshold. Adjust per sub-score in response to user feedback during Phase 6 (CLI) testing. Document the threshold as a constant.
 
-3. **Should recommendations include "positive" messages (things the site does well)?**
+3. **RESOLVED — Should recommendations include "positive" messages (things the site does well)?**
    - What we know: SCORE-03 says "recommendations based on which checks failed" -- implies failure-only.
    - What's unclear: Whether a "your schema markup looks great" message adds value or noise.
    - Recommendation: Failure-only for v1. Positive reinforcement can be added in v2 if users request it. Keeps the report focused on action items.
