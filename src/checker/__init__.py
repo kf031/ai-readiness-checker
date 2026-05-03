@@ -26,7 +26,7 @@ from src.checker.contracts import ContentAnalysis
 from src.checker.schema_analyzer import analyze_schema
 
 # Phase 4 exports — high-level API
-# (analyze_content added in Plan 04-03)
+from src.checker.content_analyzer import analyze_content
 
 __all__ = [
     "FetchResult",
@@ -38,4 +38,5 @@ __all__ = [
     "SchemaAnalysis",
     "analyze_schema",
     "ContentAnalysis",
+    "analyze_content",
 ]
