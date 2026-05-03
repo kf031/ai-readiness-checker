@@ -10,7 +10,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 - [x] **Phase 2: Access Signals — robots.txt + llms.txt** - AI bot access analysis for 7 bots and llms.txt presence detection
 - [x] **Phase 3: Schema Extraction** - Structured data extraction and weighted scoring across 6 high-value schema types
 - [x] **Phase 4: Content Analysis** - NLP-based content quality analysis (readability, entities, headings, Q&A density)
-- [ ] **Phase 5: Scorer + Report Generator** - Weighted composite scoring with A-F grade and prioritized recommendations
+- [x] **Phase 5: Scorer + Report Generator** - Weighted composite scoring with A-F grade and prioritized recommendations
 - [ ] **Phase 6: Pipeline Orchestrator + CLI** - Full pipeline wired into a single terminal command with rich-formatted output
 - [ ] **Phase 7: Streamlit Dashboard** - Interactive web UI for URL input, score visualization, and result exploration
 - [ ] **Phase 8: Test Suite** - Automated pytest coverage for robots, schema, and content analyzer modules
@@ -127,7 +127,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 - [x] 05-01: ScoreReport Dataclass + Core Scoring — ScoreReport in contracts.py, compute_overall_score, letter_grade, generate_report, 13 tests (SCORE-01, SCORE-02, SCORE-04 partial)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 05-02: Recommendation Generation — 4 per-module recommendation generators, priority sorting, wired into generate_report, 7 new tests (SCORE-03, SCORE-04 complete)
+- [x] 05-02: Recommendation Generation — 4 per-module recommendation generators, priority sorting, wired into generate_report, 7 new tests (SCORE-03, SCORE-04 complete)
 
 **Cross-cutting constraints:**
 - `ScoreReport` dataclass appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
-| 5. Scorer + Report Generator | 2/2 | Planned | 2026-05-03 |
+| 5. Scorer + Report Generator | 2/2 | Complete | 2026-05-04 |
 | 6. Pipeline Orchestrator + CLI | 0/? | Not started | - |
 | 7. Streamlit Dashboard | 0/? | Not started | - |
 | 8. Test Suite | 0/? | Not started | - |
