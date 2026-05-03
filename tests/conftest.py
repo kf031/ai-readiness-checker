@@ -276,6 +276,100 @@ SCHEMA_MALFORMED_JSONLD = """<!DOCTYPE html>
 SCHEMA_EMPTY_HTML = "<html><head></head><body></body></html>"
 
 
+# -- Content HTML fixtures (Phase 4) --
+
+CONTENT_HTML_TEXT_HEAVY = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Text-Heavy Article Page</title>
+    <meta name="description" content="A comprehensive article about web accessibility and AI search engine optimization best practices">
+</head>
+<body>
+    <h1>The Complete Guide to AI Search Engine Visibility</h1>
+    <p>Artificial intelligence search engines are transforming how users discover content online. These systems rely on structured data, readable text, and clear content organization to surface the most relevant results.</p>
+    <p>Web accessibility and AI readiness share many common principles. Both prioritize semantic HTML structure, descriptive headings, and high-quality textual content that clearly communicates the purpose of each page.</p>
+    <p>Modern websites must balance visual design with machine readability. Search engines and AI crawlers analyze content differently than human readers, making it essential to optimize for both audiences simultaneously.</p>
+    <p>The relationship between content quality and search visibility continues to evolve as language models become more sophisticated at understanding natural language patterns and contextual relationships within web documents.</p>
+    <h2>Understanding Structured Data</h2>
+    <p>Schema.org markup provides a standardized vocabulary for describing page content to machines. When implemented correctly, structured data helps AI systems understand product information, FAQs, organizational details, and article metadata.</p>
+    <p>Google processes millions of web pages daily using automated extraction algorithms that identify key entities like organizations, products, and people mentioned throughout the content.</p>
+    <h2>Content Quality Metrics</h2>
+    <p>Readability scores measure how accessible your writing is to a general audience. The Flesch Reading Ease formula evaluates sentence length and syllable count to produce a score between 0 and 100, with higher scores indicating easier reading.</p>
+    <p>The Gunning Fog Index estimates the years of formal education needed to understand text on first reading. Business content typically targets a Fog score between 8 and 12.</p>
+</body>
+</html>"""
+
+CONTENT_HTML_FAQ = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Frequently Asked Questions</title>
+</head>
+<body>
+    <h1>Frequently Asked Questions</h1>
+    <h2>What is AI search engine visibility?</h2>
+    <p>AI search engine visibility measures how easily artificial intelligence crawlers can discover, understand, and surface your website content in response to user queries.</p>
+    <h2>How do I check my site's AI readiness?</h2>
+    <p>You can use automated tools that analyze your robots.txt configuration, structured data markup, content readability, and other signals that AI crawlers use to evaluate web pages.</p>
+    <h2>Why does heading structure matter for AI?</h2>
+    <p>Clear heading hierarchies help AI models understand the organization of your content. They identify main topics and subtopics, making it easier to extract relevant information.</p>
+    <h2>Can AI crawlers read JavaScript content?</h2>
+    <p>Some AI crawlers can execute JavaScript, but many rely on server-rendered HTML. It is best practice to ensure critical content is available in the initial HTML response.</p>
+    <p>For more detailed guidance, consult the documentation provided by major AI companies about their crawler behavior and requirements.</p>
+</body>
+</html>"""
+
+CONTENT_HTML_THIN = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Thin Content</title>
+    <script src="/assets/bundle.12345.js"></script>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="preload" href="/fonts/inter.woff2" as="font">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <meta property="og:title" content="Thin Content">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+</head>
+<body>
+    <div id="root"></div>
+    <script>window.__INITIAL_STATE__ = {};</script>
+</body>
+</html>"""
+
+CONTENT_HTML_NO_HEADINGS = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>No Headings Page</title>
+</head>
+<body>
+    <p>This page contains paragraphs of text but no heading elements at all.</p>
+    <p>The absence of headings makes it difficult for AI crawlers to understand the document structure.</p>
+    <p>Search engines may struggle to identify the main topics and content hierarchy on pages without proper heading markup.</p>
+    <p>Best practices recommend using H1 for the main page title, H2 for major sections, and H3 for subsections within those sections.</p>
+</body>
+</html>"""
+
+CONTENT_HTML_MULTI_ENTITY = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Multi-Entity Company Page</title>
+</head>
+<body>
+    <h1>About Our Company</h1>
+    <p>Apple Inc. announced a new partnership with Microsoft Corporation to develop cross-platform AI solutions. The collaboration was revealed by Tim Cook during a press conference in Cupertino, California.</p>
+    <p>Google DeepMind researchers based in London, United Kingdom have published groundbreaking research on natural language understanding. The team at OpenAI in San Francisco continues to advance the field of artificial intelligence.</p>
+    <p>NVIDIA Corporation, headquartered in Santa Clara, provides GPU hardware essential for training large language models. Amazon Web Services and Google Cloud Platform both offer managed AI infrastructure services.</p>
+    <p>International Business Machines has a long history of AI research dating back to the Deep Blue chess computer. Modern IBM Watson services are used by healthcare organizations across the United States and Europe.</p>
+</body>
+</html>"""
+
+
 # -- Fixtures for mock requests responses --
 
 @pytest.fixture
