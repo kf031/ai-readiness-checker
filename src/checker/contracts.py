@@ -5,7 +5,7 @@ This module is the single source of truth for all inter-module communication sha
 Every downstream module imports its input/output contracts from here.
 
 Phase 1: FetchResult, CrawlError
-Phase 2: (future) RobotsAnalysis, LLMSTxtAnalysis
+Phase 2: RobotsResult, BotStatus, LlmsResult
 Phase 3: (future) SchemaAnalysis
 Phase 4: (future) ContentAnalysis
 Phase 5: (future) ScoreReport
@@ -58,5 +58,53 @@ class FetchResult:
     fetched_at: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
+
+@dataclass
+class BotStatus:
+    """Per-bot access status extracted from robots.txt."""
+
+    bot_name: str  # e.g., "GPTBot"
+    status: str  # "allowed" | "blocked" | "not_mentioned"
+    rule_line: Optional[str] = None  # The Allow/Disallow line that determined status
+    explicitly_mentioned: bool = False  # True if bot token appeared in a User-agent line
+
+
+@dataclass
+class RobotsResult:
+    """Complete robots.txt analysis result.
+
+    Consumed by Phase 5 scorer for the robots component (20% weight).
+    """
+
+    url: str  # The URL whose robots.txt was analyzed
+    exists: bool  # robots.txt was fetched successfully (200 OK)
+    status_code: Optional[int] = None  # HTTP status from fetch
+    fetch_error: Optional[str] = None  # Error type if fetch failed (None if success)
+    bots: list[BotStatus] = field(default_factory=list)  # Per-bot breakdown (always 7 items)
+    raw_text: Optional[str] = None  # Raw robots.txt content (None if fetch failed)
+    fetched_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+
+@dataclass
+class LlmsResult:
+    """Complete llms.txt analysis result.
+
+    Consumed by Phase 5 scorer for the llms.txt component (15% weight).
+    """
+
+    url: str  # The URL whose llms.txt was analyzed
+    found: bool  # llms.txt returned 200 OK
+    status_code: Optional[int] = None  # HTTP status from fetch
+    fetch_error: Optional[str] = None  # Error type if fetch failed (None if success)
+    valid: Optional[bool] = None  # Format validity per spec (None if not found)
+    validation_errors: list[str] = field(default_factory=list)  # Format violations
+    content_preview: Optional[str] = None  # First 500 chars if found (None if not)
+    raw_text: Optional[str] = None  # Full llms.txt content (None if not found)
+    fetched_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
 
 # TODO: v2 — CRAWL-03: add response.headers dict to FetchResult
