@@ -28,6 +28,12 @@ from src.checker.schema_analyzer import analyze_schema
 # Phase 4 exports — high-level API
 from src.checker.content_analyzer import analyze_content
 
+# Phase 5 exports — data contracts
+from src.checker.contracts import ScoreReport
+
+# Phase 5 exports — high-level API
+from src.checker.scorer import generate_report
+
 __all__ = [
     "FetchResult",
     "CrawlError",
@@ -39,4 +45,6 @@ __all__ = [
     "analyze_schema",
     "ContentAnalysis",
     "analyze_content",
+    "ScoreReport",
+    "generate_report",
 ]
