@@ -135,6 +135,147 @@ Still no links.
 """
 
 
+# -- Schema HTML fixtures (Phase 3) --
+
+SCHEMA_JSONLD_PRODUCT = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Product Page</title>
+</head>
+<body>
+    <h1>Test Product</h1>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Test Product",
+        "description": "A sample product for testing",
+        "offers": {
+            "@type": "Offer",
+            "price": "29.99",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+</body>
+</html>"""
+
+SCHEMA_MICRODATA_FAQ = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>FAQ Page</title></head>
+<body>
+    <div itemscope itemtype="http://schema.org/FAQPage">
+        <div itemprop="mainEntity" itemscope itemtype="http://schema.org/Question">
+            <h3 itemprop="name">What is this?</h3>
+            <div itemprop="acceptedAnswer" itemscope itemtype="http://schema.org/Answer">
+                <p itemprop="text">A test FAQ page.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+SCHEMA_GRAPH_MULTI_TYPE = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Multi-Type Page</title></head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {"@type": "Product", "name": "Graph Product"},
+            {"@type": "Organization", "name": "Graph Org"},
+            {"@type": "WebSite", "name": "Graph Site"}
+        ]
+    }
+    </script>
+</body>
+</html>"""
+
+SCHEMA_RDFA_BREADCRUMB = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Breadcrumb Page</title></head>
+<body>
+    <ol vocab="http://schema.org/" typeof="BreadcrumbList">
+        <li property="itemListElement" typeof="ListItem">
+            <a property="item" typeof="WebPage" href="/">
+                <span property="name">Home</span>
+            </a>
+            <meta property="position" content="1">
+        </li>
+    </ol>
+</body>
+</html>"""
+
+SCHEMA_OG_PRODUCT = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>OG Product Page</title>
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="OG Product">
+</head>
+<body><p>Product with only OpenGraph markup.</p></body>
+</html>"""
+
+SCHEMA_MULTI_FORMAT = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Multi-Format Page</title>
+    <meta property="og:type" content="product">
+</head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Test Article",
+        "author": {"@type": "Person", "name": "Test Author"}
+    }
+    </script>
+    <div itemscope itemtype="http://schema.org/FAQPage">
+        <div itemprop="mainEntity" itemscope itemtype="http://schema.org/Question">
+            <h3 itemprop="name">Q?</h3>
+            <div itemprop="acceptedAnswer" itemscope itemtype="http://schema.org/Answer">
+                <p itemprop="text">A.</p>
+            </div>
+        </div>
+    </div>
+    <ol vocab="http://schema.org/" typeof="BreadcrumbList">
+        <li property="itemListElement" typeof="ListItem">
+            <a property="item" typeof="WebPage" href="/"><span property="name">Home</span></a>
+            <meta property="position" content="1">
+        </li>
+    </ol>
+</body>
+</html>"""
+
+SCHEMA_MALFORMED_JSONLD = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Broken JSON-LD Page</title></head>
+<body>
+    <script type="application/ld+json">
+    {broken json that will not parse
+    </script>
+    <script type="application/ld+json">
+    {"@context": "https://schema.org", "@type": "Organization", "name": "Valid Org"}
+    </script>
+    <div itemscope itemtype="http://schema.org/FAQPage">
+        <div itemprop="mainEntity" itemscope itemtype="http://schema.org/Question">
+            <h3 itemprop="name">Still works?</h3>
+            <div itemprop="acceptedAnswer" itemscope itemtype="http://schema.org/Answer">
+                <p itemprop="text">Yes.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"""
+
+SCHEMA_EMPTY_HTML = "<html><head></head><body></body></html>"
+
+
 # -- Fixtures for mock requests responses --
 
 @pytest.fixture
