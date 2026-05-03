@@ -542,7 +542,7 @@ def score_qa_density(analysis: dict) -> float:
 | A5 | Q&A density ceiling of 0.10 (10% of sentences as QA pairs) maps to score 1.0. | Code Examples | Medium — FAQ pages could have higher density. Ceiling means all "good" FAQ pages score the same (1.0), which is acceptable since the goal is detecting absence, not ranking abundance. |
 | A6 | Heading hierarchy check (H3 without H2) is sufficient for hierarchy validation. A deeper check (e.g., H3 must appear after its parent H2 in DOM order) is not needed. | Code Examples | Low — standard SEO best practice focuses on the skip-level violation (H3 without H2). DOM-order checking would catch H3 appearing before its first H2, but this is an edge case for malformed pages. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Combined sub-signal weighting for CONT-06**
    - What we know: CONT-06 requires a combined 0.0-1.0 score from all sub-signals
