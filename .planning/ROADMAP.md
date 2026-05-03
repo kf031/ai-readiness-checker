@@ -7,7 +7,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 ## Phases
 
 - [x] **Phase 1: Foundation — Data Contracts + Crawler** - Type-safe data contracts for all inter-module communication, plus URL fetching with realistic headers and graceful error handling
-- [ ] **Phase 2: Access Signals — robots.txt + llms.txt** - AI bot access analysis for 7 bots and llms.txt presence detection
+- [x] **Phase 2: Access Signals — robots.txt + llms.txt** - AI bot access analysis for 7 bots and llms.txt presence detection
 - [ ] **Phase 3: Schema Extraction** - Structured data extraction and weighted scoring across 6 high-value schema types
 - [ ] **Phase 4: Content Analysis** - NLP-based content quality analysis (readability, entities, headings, Q&A density)
 - [ ] **Phase 5: Scorer + Report Generator** - Weighted composite scoring with A-F grade and prioritized recommendations
@@ -48,14 +48,14 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Plans**: 4 plans in 3 waves
 
 **Wave 1** *(no dependencies)*
-- [ ] 02-01: Data Contracts + Config + Test Scaffolding — RobotsResult/BotStatus/LlmsResult dataclasses, httpx dependency, test stubs
+- [x] 02-01: Data Contracts + Config + Test Scaffolding — RobotsResult/BotStatus/LlmsResult dataclasses, httpx dependency, test stubs
 
 **Wave 2** *(blocked on Wave 1)*
-- [ ] 02-02: robots.txt Module — fetch, parse, classify 7 AI bots, compute bot access score (BOT-01, BOT-02)
-- [ ] 02-03: llms.txt Module — fetch, validate format, compute llms.txt score (LLMS-01, LLMS-02)
+- [x] 02-02: robots.txt Module — fetch, parse, classify 7 AI bots, compute bot access score (BOT-01, BOT-02)
+- [x] 02-03: llms.txt Module — fetch, validate format, compute llms.txt score (LLMS-01, LLMS-02)
 
 **Wave 3** *(blocked on Wave 2)*
-- [ ] 02-04: Concurrent Fetcher + Package Wiring — httpx.AsyncClient concurrent fetch with sequential fallback, __init__.py exports
+- [x] 02-04: Concurrent Fetcher + Package Wiring — httpx.AsyncClient concurrent fetch with sequential fallback, __init__.py exports
 
 **Cross-cutting constraints:**
 - `RobotsResult` and `LlmsResult` appended to `src/checker/contracts.py` (single source of truth per Phase 1 pattern)
@@ -135,7 +135,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation — Data Contracts + Crawler | 2/2 | Complete | - |
-| 2. Access Signals — robots.txt + llms.txt | 0/4 | Planned | - |
+| 2. Access Signals — robots.txt + llms.txt | 4/4 | Complete | 2026-05-03 |
 | 3. Schema Extraction | 0/? | Not started | - |
 | 4. Content Analysis | 0/? | Not started | - |
 | 5. Scorer + Report Generator | 0/? | Not started | - |
