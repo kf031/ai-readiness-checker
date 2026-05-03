@@ -39,10 +39,10 @@
 
 ### Scoring & Report
 
-- [ ] **SCORE-01**: Tool combines all four module scores into a weighted overall score (0–100): robots 20%, llms.txt 15%, schema 30%, content 35%
-- [ ] **SCORE-02**: Overall score maps to a letter grade: A (85–100), B (70–84), C (55–69), D (40–54), F (0–39)
-- [ ] **SCORE-03**: Tool generates a prioritized list of plain-English recommendations based on which checks failed (e.g. "GPTBot is blocked in your robots.txt")
-- [ ] **SCORE-04**: Final report is a structured dict containing url, overall_score, grade, per-module breakdown with weights, recommendations, and timestamp
+- [x] **SCORE-01**: Tool combines all four module scores into a weighted overall score (0–100): robots 20%, llms.txt 15%, schema 30%, content 35%
+- [x] **SCORE-02**: Overall score maps to a letter grade: A (85–100), B (70–84), C (55–69), D (40–54), F (0–39)
+- [x] **SCORE-03**: Tool generates a prioritized list of plain-English recommendations based on which checks failed (e.g. "GPTBot is blocked in your robots.txt")
+- [x] **SCORE-04**: Final report is a structured dict containing url, overall_score, grade, per-module breakdown with weights, recommendations, and timestamp
 
 ### CLI
 

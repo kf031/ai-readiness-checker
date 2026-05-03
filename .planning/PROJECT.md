@@ -28,27 +28,26 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Fetch page HTML with realistic headers, redirect handling, and graceful error handling (Phase 1)
+- [x] Analyze robots.txt for AI bot access (GPTBot, ClaudeBot, PerplexityBot, CCBot, Google-Extended, Applebot-Extended, Amazonbot) (Phase 2)
+- [x] Check for llms.txt and llms-full.txt files with content preview (Phase 2)
+- [x] Extract and score structured data (JSON-LD, microdata, schema.org types: Product, FAQPage, Organization, BreadcrumbList, Article, Review) (Phase 3)
+- [x] Analyze content quality via NLP: readability (textstat), content-to-HTML ratio, Q&A density, entity clarity (spaCy), word count, heading structure (Phase 4)
+- [x] Combine all module scores into a weighted final score (robots 20%, llms.txt 15%, schema 30%, content 35%) with A–F grade (Phase 5)
+- [x] Generate prioritized, human-readable recommendations for each failing area (Phase 5)
 
 ### Active
 
-- [ ] Fetch page HTML with realistic headers, redirect handling, and graceful error handling
-- [ ] Analyze robots.txt for AI bot access (GPTBot, ClaudeBot, PerplexityBot, CCBot, Google-Extended, Applebot-Extended, Amazonbot)
-- [ ] Check for llms.txt and llms-full.txt files with content preview
-- [ ] Extract and score structured data (JSON-LD, microdata, schema.org types: Product, FAQPage, Organization, BreadcrumbList, Article, Review)
-- [ ] Analyze content quality via NLP: readability (textstat), content-to-HTML ratio, Q&A density, entity clarity (spaCy), word count, heading structure
-- [ ] Combine all module scores into a weighted final score (robots 20%, llms.txt 15%, schema 30%, content 35%) with A–F grade
-- [ ] Generate prioritized, human-readable recommendations for each failing area
 - [ ] CLI entry point: `python -m checker <url>` with rich-formatted score card
 - [ ] Streamlit dashboard: URL input → spinner → overall score gauge → grade badge → per-module expandable sections → recommendations list
 
 ### Out of Scope
 
-- Batch URL / CSV upload — future v2 feature
-- FastAPI wrapper / hosted API — future v2
-- Browser extension — future v2
-- Weekly monitoring / email alerts — future v2
-- Dataset publishing on HuggingFace — future v2
+- Batch URL / CSV upload — future v3 feature
+- FastAPI wrapper / hosted API — future v3
+- Browser extension — future v3
+- Weekly monitoring / email alerts — future v3
+- Dataset publishing on HuggingFace — future v3
 - Authentication or user accounts — not needed for open-source tool
 
 ## Context
@@ -58,6 +57,8 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 - Python 3.10+ project using: requests, BeautifulSoup4, spaCy (en_core_web_sm), textstat, extruct, streamlit, pandas, rich, pytest
 - The project is exploratory — user wants to build it fully first, then decide on deployment and next steps
 - No strict deadline; goal is to ship a working v1 that can be shown as a portfolio piece or grown further
+- **v2 direction**: LLM Advisor Agent — a skill-calling agent that invokes modular fix skills (schema, headings, readability, Q&A) to generate improved HTML + visual before/after preview. Initial backend is Claude Code skills, standalone LLM backends in v3.
+- **v3 direction**: Distribution & scale — JSON export, batch CSV, FastAPI, browser extension, monitoring, standalone LLM backends (Ollama, Anthropic, OpenAI)
 
 ## Constraints
 
@@ -73,6 +74,7 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 | extruct for structured data extraction | Handles JSON-LD, microdata, and RDFa in one pass | — Pending |
 | Streamlit for demo UI | Easiest Python-native way to ship a shareable web demo with no backend work | — Pending |
 | Weighted scoring (content 35%, schema 30%) | Content quality and structured data are highest signal for AI citability | — Pending |
+| LLM Agent in v2, distribution in v3 | Lead with standout feature (AI-generated fixes + visual preview) before building infrastructure. Claude Code skills as first backend avoids LLM SDK deps in v2. | — Pending |
 
 ## Evolution
 
@@ -92,4 +94,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-02 — Milestone v1.0 started*
+*Last updated: 2026-05-04 — Phase 5 complete (Scorer + Report Generator), 5/8 phases done*
