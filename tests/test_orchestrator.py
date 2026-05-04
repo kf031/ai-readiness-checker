@@ -226,30 +226,28 @@ def test_pipeline_stages_run_order(
 # ----- Test 7: Fallback objects compatible with generate_report -----
 
 def test_pipeline_fallback_objects_compatible_with_generate_report():
-    """Verify fallback objects have all fields generate_report accesses — no AttributeError/KeyError."""
-    robots_result = RobotsResult(url="https://example.com")
-    llms_result = LlmsResult(url="https://example.com")
+    """Verify fallback objects with minimal fields don't cause AttributeError/KeyError in generate_report."""
+    from src.checker.scorer import generate_report
+
+    robots_result = RobotsResult(url="https://example.com", exists=False)
+    llms_result = LlmsResult(url="https://example.com", found=False)
     schema_analysis = SchemaAnalysis(url="https://example.com")
     content_analysis = ContentAnalysis(url="https://example.com")
 
     try:
-        report = ScoreReport(
-            url="https://example.com",
-            overall_score=0.0,
-            grade="F",
-            module_breakdown={
-                "robots": {"score": 0.0, "weight": 0.20, "weighted": 0.0},
-                "llms_txt": {"score": 0.0, "weight": 0.15, "weighted": 0.0},
-                "schema": {"score": 0.0, "weight": 0.30, "weighted": 0.0},
-                "content": {"score": 0.0, "weight": 0.35, "weighted": 0.0},
-            },
-            recommendations=[],
+        report = generate_report(
+            "https://example.com",
+            robots_result,
+            llms_result,
+            schema_analysis,
+            content_analysis,
         )
-        assert hasattr(report, "overall_score")
-        assert hasattr(report, "grade")
-        assert report.overall_score == 0.0
     except (AttributeError, KeyError) as e:
-        pytest.fail(f"Fallback objects caused unexpected error: {e}")
+        pytest.fail(f"Fallback objects caused unexpected error in generate_report: {e}")
+
+    assert hasattr(report, "overall_score")
+    assert hasattr(report, "grade")
+    assert isinstance(report.overall_score, (int, float))
 
 
 # ----- Test 8: Multiple module failures -----
