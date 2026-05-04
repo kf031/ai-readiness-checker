@@ -34,17 +34,21 @@ from src.checker.contracts import ScoreReport
 # Phase 5 exports — high-level API
 from src.checker.scorer import generate_report
 
+# Phase 6 exports — pipeline orchestrator
+from src.checker.orchestrator import run_pipeline
+
 __all__ = [
-    "FetchResult",
-    "CrawlError",
-    "RobotsResult",
     "BotStatus",
-    "LlmsResult",
-    "fetch_access_signals",
-    "SchemaAnalysis",
-    "analyze_schema",
     "ContentAnalysis",
-    "analyze_content",
+    "CrawlError",
+    "FetchResult",
+    "LlmsResult",
+    "RobotsResult",
+    "SchemaAnalysis",
     "ScoreReport",
+    "analyze_content",
+    "analyze_schema",
+    "fetch_access_signals",
     "generate_report",
+    "run_pipeline",
 ]

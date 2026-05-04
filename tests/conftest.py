@@ -1,6 +1,9 @@
 """Shared fixtures for AI Readiness Checker tests."""
 
+from datetime import datetime, timezone
+
 import pytest
+from bs4 import BeautifulSoup
 
 
 # -- Sample HTML fixtures --
@@ -436,3 +439,78 @@ def mock_response_map(
         '404': mock_404_response,
         '500': mock_500_response,
     }
+
+
+# -- Orchestrator fixtures (Phase 6) --
+
+@pytest.fixture
+def sample_fetch_result():
+    """Return a valid FetchResult for orchestrator tests."""
+    from src.checker.contracts import FetchResult
+
+    html = "<html><body><p>Test</p></body></html>"
+    return FetchResult(
+        url="https://example.com",
+        final_url="https://example.com",
+        status_code=200,
+        html=html,
+        soup=BeautifulSoup(html, 'lxml'),
+    )
+
+
+@pytest.fixture
+def sample_robots_result():
+    """Return a valid RobotsResult for orchestrator tests."""
+    from src.checker.contracts import RobotsResult
+
+    return RobotsResult(
+        url="https://example.com",
+        exists=True,
+        bots=[],
+    )
+
+
+@pytest.fixture
+def sample_llms_result():
+    """Return a valid LlmsResult for orchestrator tests."""
+    from src.checker.contracts import LlmsResult
+
+    return LlmsResult(
+        url="https://example.com",
+        found=False,
+    )
+
+
+@pytest.fixture
+def sample_schema_analysis():
+    """Return a valid SchemaAnalysis for orchestrator tests."""
+    from src.checker.contracts import SchemaAnalysis
+
+    return SchemaAnalysis(
+        url="https://example.com",
+        score=0.5,
+        detected_types={"Organization"},
+    )
+
+
+@pytest.fixture
+def sample_content_analysis():
+    """Return a valid ContentAnalysis for orchestrator tests."""
+    from src.checker.contracts import ContentAnalysis
+
+    return ContentAnalysis(
+        url="https://example.com",
+        combined_score=0.6,
+    )
+
+
+@pytest.fixture
+def sample_crawl_error():
+    """Return a CrawlError for orchestrator tests."""
+    from src.checker.contracts import CrawlError
+
+    return CrawlError(
+        url="https://example.com",
+        error_type="timeout",
+        message="timed out after 10s",
+    )
