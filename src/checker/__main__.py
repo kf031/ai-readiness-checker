@@ -3,7 +3,11 @@
 Run: python -m checker <url> [--timeout SECONDS] [--verbose]
 """
 
+import argparse
 import sys
+
+from .cli_renderer import display_score_card
+from .orchestrator import run_pipeline
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -15,9 +19,6 @@ def main(argv: list[str] | None = None) -> int:
     Returns:
         Exit code: 0 on success.
     """
-    import argparse
-    from .orchestrator import run_pipeline
-    from .cli_renderer import display_score_card
 
     parser = argparse.ArgumentParser(
         prog="python -m checker",
