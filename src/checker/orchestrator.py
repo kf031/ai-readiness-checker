@@ -39,6 +39,10 @@ def run_pipeline(url: str, timeout: float = 10.0, verbose: bool = False) -> dict
         - errors (list[str]): error messages from any failed stages
         - complete (bool): True if crawl succeeded and both schema/content ran
         - stages_run (list[str]): names of all stages that were attempted
+        - robots_result (RobotsResult): raw robots.txt analysis (None replaced with empty fallback)
+        - llms_result (LlmsResult): raw llms.txt analysis (None replaced with empty fallback)
+        - schema_analysis (SchemaAnalysis): raw schema extraction result (None replaced with empty fallback)
+        - content_analysis (ContentAnalysis): raw content analysis result (None replaced with empty fallback)
     """
     stages_run: list[str] = []
     errors: list[str] = []
@@ -109,4 +113,8 @@ def run_pipeline(url: str, timeout: float = 10.0, verbose: bool = False) -> dict
         "errors": errors,
         "complete": complete,
         "stages_run": stages_run,
+        "robots_result": robots_result or RobotsResult(url=url),
+        "llms_result": llms_result or LlmsResult(url=url),
+        "schema_analysis": schema_analysis or SchemaAnalysis(url=url),
+        "content_analysis": content_analysis or ContentAnalysis(url=url),
     }
