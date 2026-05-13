@@ -537,22 +537,13 @@ This model is why the architecture MUST separate the "trigger analysis" step (bu
 | A2 | Streamlit `AppTest` is sufficient for testing DASH-06 (cache behavior). Training data suggests AppTest can verify cache state via `at.session_state`, but this may not fully exercise the cache internals. | Validation Architecture | If AppTest cannot verify cache behavior, DASH-06 test would need manual verification or a different test approach. |
 | A3 | The orchestrator modification (adding 4 raw object keys to return dict) is backward-compatible with the CLI. The CLI's `display_score_card()` accesses `pipeline_result["report"]`, `pipeline_result["errors"]`, `pipeline_result["complete"]`, `pipeline_result["stages_run"]` — none of these change. | Orchestrator Gap | CLI would break if it accesses keys by index or iterates the dict and encounters unexpected keys. Verified: CLI uses explicit key access, no iteration. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should the first module expander be open by default?**
-   - What we know: UI-SPEC leaves expander default state to Claude's discretion. The wireframe shows all expanders collapsed (▶ symbols). Streamlit's `st.expander(expanded=False)` is the default.
-   - What's unclear: User preference for initial UX — seeing all collapsed is clean but some users expect to see at least one module detail without clicking.
-   - Recommendation: Leave all expanders collapsed by default (`expanded=False`, which is the Streamlit default). This matches the UI-SPEC wireframe and keeps the initial results view clean. Users click to explore.
+1. **Should the first module expander be open by default?** — RESOLVED: All expanders collapsed by default (`expanded=False`, the Streamlit default). Matches UI-SPEC wireframe. Implemented in Plan 07-02.
 
-2. **How should the orchestrator patch be handled?**
-   - What we know: Phase 6 is verified/completed. Modifying `orchestrator.py` adds 4 keys to the return dict. This is a Phase 7 task, not Phase 6 rework.
-   - What's unclear: Should this be a separate task (Task 0: Patch orchestrator) or folded into the first dashboard task?
-   - Recommendation: Make it the first task in the plan — "Modify orchestrator to expose raw module objects." This is an unblocking prerequisite. The change is 4 lines in one file.
+2. **How should the orchestrator patch be handled?** — RESOLVED: First task in Plan 07-01. The change is 4 lines adding raw module objects to the return dict. Unblocking prerequisite for dashboard.
 
-3. **What if `st.cache_data` pickle fails for complex dataclass objects?**
-   - What we know: All objects in the pipeline result are plain dataclasses, dicts, lists, strings, floats, and datetimes — all fully picklable. But `ContentAnalysis` contains nested dicts (`heading_analysis`, `qa_analysis`, `entities`) and `RobotsResult` contains a list of `BotStatus` dataclasses.
-   - What's unclear: Whether any deeply nested object has a non-picklable attribute (e.g., a file handle, thread lock, or generator).
-   - Recommendation: Verify pickle-ability in the first implementation task. If any object fails, use `__getstate__` / `__setstate__` or a shallow-copy pre-processing step before caching.
+3. **What if `st.cache_data` pickle fails for complex dataclass objects?** — RESOLVED: Verify pickle-ability during Plan 07-02 implementation. All objects are plain dataclasses/dicts/lists — expected to be picklable. Fall back to shallow-copy preprocessing if any object fails.
 
 ## Sources
 
