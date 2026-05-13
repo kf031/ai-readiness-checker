@@ -168,7 +168,23 @@ Build an open-source Python tool that scores any website's AI search engine visi
   3. User sees the overall score as a metric and grade as a color-coded badge (green/yellow/orange/red)
   4. User can view per-module score bars and expand detail sections for each of the four modules
   5. User sees the recommendations list at the bottom and can interact with the dashboard without the pipeline re-running
-**Plans**: TBD
+**Plans**: 3 plans in 3 waves
+
+**Wave 1** *(no dependencies)*
+- [ ] 07-01: Orchestrator Patch + Test Foundation — Add raw module objects to pipeline return dict, update tests, add dashboard fixtures
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 07-02: Streamlit Config + Dashboard App — Dark theme config, full app.py with URL input, cached pipeline, score hero, module expanders, recommendations, errors
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 07-03: Dashboard Functional Tests — AppTest test suite covering all 6 DASH requirements
+
+**Cross-cutting constraints:**
+- Dashboard calls `run_pipeline()` from `src/checker/orchestrator.py` — same function the CLI uses
+- Dashboard imports `GRADE_COLORS`, `MODULE_ORDER`, `MODULE_DISPLAY_NAMES` from `src/checker/cli_renderer.py` for visual parity with CLI
+- Orchestrator return dict modified (Plan 01) to include raw `RobotsResult`, `LlmsResult`, `SchemaAnalysis`, `ContentAnalysis` objects for expander detail content (per D-03)
+- ScoreReport dataclass stays unchanged — dashboard accesses raw module objects directly, does NOT expand ScoreReport
+- Streamlit dark theme via `.streamlit/config.toml` — grade colors applied inline via hex values mapping from CLI's GRADE_COLORS Rich color names
 **UI hint**: yes
 
 ### Phase 8: Test Suite
@@ -194,5 +210,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
 | 5. Scorer + Report Generator | 2/2 | Complete | 2026-05-04 |
 | 6. Pipeline Orchestrator + CLI | 0/3 | Planned | - |
-| 7. Streamlit Dashboard | 0/? | Not started | - |
+| 7. Streamlit Dashboard | 0/3 | Planned | - |
 | 8. Test Suite | 0/? | Not started | - |
