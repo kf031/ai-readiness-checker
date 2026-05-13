@@ -50,12 +50,12 @@
 
 ### Streamlit Dashboard
 
-- [ ] **DASH-01**: User can paste a URL into the web UI and click Analyze to trigger the full analysis pipeline
-- [ ] **DASH-02**: Dashboard shows a loading spinner while analysis runs
-- [ ] **DASH-03**: Dashboard displays the overall score as a metric and grade as a color-coded badge (green/yellow/orange/red)
-- [ ] **DASH-04**: Dashboard shows per-module score bars and expandable detail sections for each of the four modules
-- [ ] **DASH-05**: Dashboard displays the recommendations list at the bottom
-- [ ] **DASH-06**: Analysis results are cached so UI interactions (expanding sections, etc.) do not re-trigger the pipeline
+- [x] **DASH-01**: User can paste a URL into the web UI and click Analyze to trigger the full analysis pipeline
+- [x] **DASH-02**: Dashboard shows a loading spinner while analysis runs
+- [x] **DASH-03**: Dashboard displays the overall score as a metric and grade as a color-coded badge (green/yellow/orange/red)
+- [x] **DASH-04**: Dashboard shows per-module score bars and expandable detail sections for each of the four modules
+- [x] **DASH-05**: Dashboard displays the recommendations list at the bottom
+- [x] **DASH-06**: Analysis results are cached so UI interactions (expanding sections, etc.) do not re-trigger the pipeline
 
 ### Tests
 
@@ -170,12 +170,12 @@
 | SCORE-03 | Phase 5 — Scorer + Report | Pending |
 | SCORE-04 | Phase 5 — Scorer + Report | Pending |
 | CLI-01 | Phase 6 — Pipeline + CLI | Pending |
-| DASH-01 | Phase 7 — Streamlit Dashboard | Pending |
-| DASH-02 | Phase 7 — Streamlit Dashboard | Pending |
-| DASH-03 | Phase 7 — Streamlit Dashboard | Pending |
-| DASH-04 | Phase 7 — Streamlit Dashboard | Pending |
-| DASH-05 | Phase 7 — Streamlit Dashboard | Pending |
-| DASH-06 | Phase 7 — Streamlit Dashboard | Pending |
+| DASH-01 | Phase 7 — Streamlit Dashboard | Complete |
+| DASH-02 | Phase 7 — Streamlit Dashboard | Complete |
+| DASH-03 | Phase 7 — Streamlit Dashboard | Complete |
+| DASH-04 | Phase 7 — Streamlit Dashboard | Complete |
+| DASH-05 | Phase 7 — Streamlit Dashboard | Complete |
+| DASH-06 | Phase 7 — Streamlit Dashboard | Complete |
 | TEST-01 | Phase 8 — Test Suite | Pending |
 | TEST-02 | Phase 8 — Test Suite | Pending |
 | TEST-03 | Phase 8 — Test Suite | Pending |
