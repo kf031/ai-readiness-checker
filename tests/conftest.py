@@ -514,3 +514,45 @@ def sample_crawl_error():
         error_type="timeout",
         message="timed out after 10s",
     )
+
+
+# -- Dashboard fixtures (Phase 7) --
+
+@pytest.fixture
+def sample_score_report():
+    """Return a complete ScoreReport for dashboard tests."""
+    from src.checker.contracts import ScoreReport
+
+    return ScoreReport(
+        url="https://example.com",
+        overall_score=78.5,
+        grade="B",
+        module_breakdown={
+            "robots": {"score": 0.85, "weight": 0.20, "weighted": 17.0},
+            "llms_txt": {"score": 1.00, "weight": 0.15, "weighted": 15.0},
+            "schema": {"score": 0.60, "weight": 0.30, "weighted": 18.0},
+            "content": {"score": 0.72, "weight": 0.35, "weighted": 25.2},
+        },
+        recommendations=[
+            {"priority": "HIGH", "module": "robots", "message": "GPTBot is blocked in your robots.txt"},
+            {"priority": "MEDIUM", "module": "schema", "message": "No FAQPage schema found"},
+            {"priority": "LOW", "module": "content", "message": "Add more descriptive H2 headings"},
+        ],
+    )
+
+
+@pytest.fixture
+def mock_pipeline_result(sample_score_report,
+                          sample_robots_result, sample_llms_result,
+                          sample_schema_analysis, sample_content_analysis):
+    """Return a full 8-key pipeline result dict matching the updated orchestrator return shape."""
+    return {
+        "report": sample_score_report,
+        "errors": [],
+        "complete": True,
+        "stages_run": ["crawl", "access_signals", "schema", "content", "score"],
+        "robots_result": sample_robots_result,
+        "llms_result": sample_llms_result,
+        "schema_analysis": sample_schema_analysis,
+        "content_analysis": sample_content_analysis,
+    }
