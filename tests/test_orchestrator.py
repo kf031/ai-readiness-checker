@@ -43,7 +43,14 @@ def test_pipeline_full_success(sample_robots_result, sample_llms_result,
         result = run_pipeline("https://example.com")
 
         assert isinstance(result, dict)
-        assert set(result.keys()) == {"report", "errors", "complete", "stages_run"}
+        assert set(result.keys()) == {
+            "report", "errors", "complete", "stages_run",
+            "robots_result", "llms_result", "schema_analysis", "content_analysis",
+        }
+        assert isinstance(result["robots_result"], RobotsResult)
+        assert isinstance(result["llms_result"], LlmsResult)
+        assert isinstance(result["schema_analysis"], SchemaAnalysis)
+        assert isinstance(result["content_analysis"], ContentAnalysis)
         assert result["complete"] is True
         assert result["stages_run"] == ["crawl", "access_signals", "schema", "content", "score"]
         assert isinstance(result["report"], ScoreReport)
@@ -83,6 +90,12 @@ def test_pipeline_crawl_error(sample_robots_result, sample_llms_result,
         # Schema and content analysis should NOT have been called
         mock_schema.assert_not_called()
         mock_content.assert_not_called()
+
+        # Raw module objects should still be present (as empty fallbacks)
+        assert isinstance(result["robots_result"], RobotsResult)
+        assert isinstance(result["llms_result"], LlmsResult)
+        assert isinstance(result["schema_analysis"], SchemaAnalysis)
+        assert isinstance(result["content_analysis"], ContentAnalysis)
 
 
 # ----- Test 3: Access signals failure (zero-score fallback) -----
