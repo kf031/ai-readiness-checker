@@ -171,7 +171,7 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Plans**: 3 plans in 3 waves
 
 **Wave 1** *(no dependencies)*
-- [ ] 07-01: Orchestrator Patch + Test Foundation — Add raw module objects to pipeline return dict, update tests, add dashboard fixtures
+- [x] 07-01: Orchestrator Patch + Test Foundation — Add raw module objects to pipeline return dict, update tests, add dashboard fixtures
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 07-02: Streamlit Config + Dashboard App — Dark theme config, full app.py with URL input, cached pipeline, score hero, module expanders, recommendations, errors
@@ -210,5 +210,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
 | 5. Scorer + Report Generator | 2/2 | Complete | 2026-05-04 |
 | 6. Pipeline Orchestrator + CLI | 0/3 | Planned | - |
-| 7. Streamlit Dashboard | 0/3 | Planned | - |
+| 7. Streamlit Dashboard | 1/3 | Executing | 2026-05-13 |
 | 8. Test Suite | 0/? | Not started | - |
