@@ -195,7 +195,18 @@ Build an open-source Python tool that scores any website's AI search engine visi
   1. Running pytest passes all robots analyzer tests using fixture HTML files (no live network calls)
   2. Running pytest passes all schema analyzer tests using fixture HTML files
   3. Running pytest passes all content analyzer tests using fixture HTML files
-**Plans**: TBD
+**Plans**: 3 plans in 1 wave
+
+**Wave 1** *(no dependencies — all three modules tested in parallel)*
+- [ ] 08-01: Robots Analyzer Test Gaps — fetch_robots_txt error paths, success path, response_too_large (TEST-01)
+- [ ] 08-02: Schema Analyzer Test Gaps — normalize_type_name, extruct failure, custom weights, empty HTML (TEST-02)
+- [ ] 08-03: Content Analyzer Test Gaps — heading edge cases, _is_question, custom weights, text truncation (TEST-03)
+
+**Cross-cutting constraints:**
+- All three plans modify different test files (test_robots.py, test_schema.py, test_content.py) — zero file overlap, fully parallel
+- All tests use fixture HTML/text data defined in conftest.py — zero live network calls
+- All new tests follow existing patterns: pytest functions with inline mocking via unittest.mock.patch
+- Plans add ~26 tests total across three modules (8 + 11 + 7)
 
 ## Progress
 
@@ -211,4 +222,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Scorer + Report Generator | 2/2 | Complete | 2026-05-04 |
 | 6. Pipeline Orchestrator + CLI | 0/3 | Planned | - |
 | 7. Streamlit Dashboard | 3/3 | Complete | 2026-05-13 |
-| 8. Test Suite | 0/? | Not started | - |
+| 8. Test Suite | 0/3 | Planned | - |
