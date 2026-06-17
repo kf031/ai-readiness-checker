@@ -122,14 +122,20 @@ Claude: [scores your site, shows grade, routes each finding to the right fix ski
 ## Install
 
 ```bash
+# Basic install — scores sites, no entity detection
 pip install ai-readiness-checker
+
+# Full install — entity extraction + Q&A analysis
+pip install ai-readiness-checker[nlp]
 python -m spacy download en_core_web_sm
 ```
+
+Works without spaCy — entity and QA scores just return 0.0 gracefully.
 
 From source:
 
 ```bash
-git clone https://github.com/yourusername/ai-readiness-checker.git
+git clone https://github.com/kf031/ai-readiness-checker.git
 cd ai-readiness-checker
 pip install -e ".[dev]"
 pytest  # 208 tests

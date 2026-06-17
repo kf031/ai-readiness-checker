@@ -33,7 +33,6 @@ dependencies = [
     "beautifulsoup4>=4.14,<5.0",
     "lxml>=4.9,<7.0",
     "httpx>=0.28,<1.0",
-    "spacy>=3.7,<4.0",
     "textstat>=0.7,<1.0",
     "extruct>=0.17,<1.0",
     "rich>=13.0,<14.0",
@@ -43,15 +42,16 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/ai-readiness-checker"
-Repository = "https://github.com/yourusername/ai-readiness-checker"
-Issues = "https://github.com/yourusername/ai-readiness-checker/issues"
+Homepage = "https://github.com/kf031/ai-readiness-checker"
+Repository = "https://github.com/kf031/ai-readiness-checker"
+Issues = "https://github.com/kf031/ai-readiness-checker/issues"
 
 [project.scripts]
 checker = "checker.__main__:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0,<9.0"]
+dev = ["pytest>=8.0,<9.0", "ruff"]
+nlp = ["spacy>=3.7,<4.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
