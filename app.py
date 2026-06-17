@@ -4,7 +4,9 @@ Run: streamlit run app.py
 """
 import streamlit as st
 
+from src.checker.agent import build_agent_report, run_llm_agent
 from src.checker.cli_renderer import GRADE_COLORS, MODULE_ORDER, MODULE_DISPLAY_NAMES
+from src.checker.contracts import CrawlError
 from src.checker.orchestrator import run_pipeline
 
 st.set_page_config(
@@ -273,6 +275,62 @@ def render_errors(result: dict) -> None:
         st.markdown(f"- {error}")
 
 
+@st.cache_data(show_spinner="Running AI improvement skills...")
+def _run_agent_cached(html: str, report_json: str) -> dict | None:
+    """Cached agent invocation — keyed by full HTML content + report JSON."""
+    import json
+    report = json.loads(report_json)
+    output = run_llm_agent(report, html)
+    if not output.skills_called:
+        return None
+    return {
+        "skills_called": output.skills_called,
+        "changes": output.changes,
+        "diff_html": output.diff_html,
+        "explanation": output.explanation,
+    }
+
+
+def render_agent_output(result: dict) -> None:
+    """Render the v2 agent improvement output."""
+    import json
+
+    fetch_result = result.get("fetch_result")
+    if fetch_result is None or isinstance(fetch_result, CrawlError):
+        st.warning("Cannot generate improvements — page fetch failed.")
+        return
+
+    html = getattr(fetch_result, "html", "")
+    if not html:
+        st.warning("Cannot generate improvements — no HTML content available.")
+        return
+
+    report_dict = build_agent_report(result)
+    output = _run_agent_cached(html, json.dumps(report_dict, default=str))
+
+    if output is None:
+        st.success("All modules scored above threshold — no improvements needed.")
+        return
+
+    st.subheader("Improvement Results")
+
+    st.write("**Skills Invoked:**")
+    for skill in output["skills_called"]:
+        st.markdown(f"- `{skill}`")
+
+    st.write("**Changes Made:**")
+    for change in output["changes"]:
+        st.markdown(f"- {change}")
+
+    if output.get("diff_html"):
+        st.write("**Before / After Comparison:**")
+        st.components.v1.html(output["diff_html"], height=600, scrolling=True)
+
+    if output.get("explanation"):
+        st.write("**Why These Changes Help:**")
+        st.markdown(output["explanation"])
+
+
 # --- Main layout ---
 st.title("AI Readiness Checker")
 
@@ -282,15 +340,22 @@ url = st.text_input(
     key="url_input",
 )
 
-col_input, col_spacer = st.columns([1, 4])
+col_input, col_fix, col_spacer = st.columns([1, 1, 4])
 with col_input:
     analyze_clicked = st.button("Analyze", type="primary")
+with col_fix:
+    improve_clicked = st.button("Improve My Site", type="secondary",
+                                disabled=not st.session_state.get("analysis_done", False))
 
 if analyze_clicked and url:
     st.session_state.current_url = url
     st.session_state.analysis_done = True
+    st.session_state.improve_clicked = False
 elif analyze_clicked and not url:
     st.warning("Please enter a URL.")
+
+if improve_clicked and st.session_state.get("analysis_done"):
+    st.session_state.improve_clicked = True
 
 # --- Results area (only if analysis has been run) ---
 if st.session_state.get("analysis_done"):
@@ -303,3 +368,8 @@ if st.session_state.get("analysis_done"):
     render_recommendations(result)
     st.markdown("<br>", unsafe_allow_html=True)
     render_errors(result)
+
+    # V2 Agent: Show results if "Improve My Site" was clicked
+    if st.session_state.get("improve_clicked"):
+        st.markdown("---")
+        render_agent_output(result)
