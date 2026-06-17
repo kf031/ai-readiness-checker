@@ -51,6 +51,12 @@ def main(argv: list[str] | None = None) -> int:
         "--mcp", action="store_true",
         help="Start MCP server for LLM tool integration (ignores url)",
     )
+    parser.add_argument(
+        "--llm-backend",
+        choices=["ollama", "openai", "anthropic"],
+        default=None,
+        help="Use an LLM backend for AI-powered fix generation (requires --fix)",
+    )
     args = parser.parse_args(argv)
 
     # --mcp mode: launch MCP server (does not run pipeline)
@@ -68,13 +74,18 @@ def main(argv: list[str] | None = None) -> int:
 
     # --fix mode: invoke the v2 agent after scoring
     if args.fix:
-        _run_fix(result)
+        _run_fix(result, args.llm_backend)
 
     return 0
 
 
-def _run_fix(pipeline_result: dict) -> None:
-    """Run the v2 LLM agent and display improvement results."""
+def _run_fix(pipeline_result: dict, backend_name: str | None = None) -> None:
+    """Run the v2 LLM agent and display improvement results.
+
+    Args:
+        pipeline_result: Dict from run_pipeline().
+        backend_name: Optional LLM backend name (ollama, openai, anthropic).
+    """
     from .agent import build_agent_report, run_llm_agent
 
     fetch_result = pipeline_result.get("fetch_result")
@@ -88,7 +99,19 @@ def _run_fix(pipeline_result: dict) -> None:
         return
 
     report = build_agent_report(pipeline_result)
-    output = run_llm_agent(report, html)
+
+    # Initialize LLM backend if requested
+    backend = None
+    if backend_name:
+        try:
+            from .llm_backends import get_backend
+            backend = get_backend(backend_name)
+            print(f"\n[fix] Using LLM backend: {backend_name}")
+        except Exception as e:
+            print(f"\n[fix] LLM backend '{backend_name}' unavailable: {e}")
+            print("[fix] Falling back to template-based skills.")
+
+    output = run_llm_agent(report, html, backend=backend)
 
     print(f"\n{'─' * 60}")
     print("AI Improvement Summary")

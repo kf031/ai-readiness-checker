@@ -195,12 +195,14 @@ def _merge_head_change(base: str, head_source: str) -> str:
     )
 
 
-def run_llm_agent(report: dict, html: str) -> AgentOutput:
-    """Run the full v2 agent pipeline: decide skills, invoke, merge, render, explain.
+def run_llm_agent(report: dict, html: str, backend=None) -> AgentOutput:
+    """Run the full agent pipeline: decide skills, invoke, merge, render, explain.
 
     Args:
         report: v1 scoring report dict (as returned by orchestrator).
         html: Original page HTML string.
+        backend: Optional LLMBackend instance (v3). When provided, skills can
+            use the LLM to generate better fixes instead of templates alone.
 
     Returns:
         AgentOutput with improved_html, diff_html, explanation, skills_called, changes.
@@ -210,7 +212,10 @@ def run_llm_agent(report: dict, html: str) -> AgentOutput:
     results = []
     for name in skill_names:
         try:
-            result = execute_skill(name, html=html, report=report)
+            kwargs = {}
+            if backend is not None:
+                kwargs["backend"] = backend
+            result = execute_skill(name, html=html, report=report, **kwargs)
             results.append(result)
         except Exception:
             # If a skill fails, skip it and continue with others
