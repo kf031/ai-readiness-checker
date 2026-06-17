@@ -54,9 +54,9 @@ def _get_nlp():
     if _nlp is None:
         try:
             _nlp = __import__("spacy").load("en_core_web_sm")
-        except (OSError, ImportError):
+        except Exception:
             logger.warning(
-                "spaCy model 'en_core_web_sm' not found. "
+                "spaCy model 'en_core_web_sm' could not be loaded. "
                 "Install with: python -m spacy download en_core_web_sm. "
                 "Entity extraction and QA density scoring will return 0.0."
             )
