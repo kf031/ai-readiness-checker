@@ -25,3 +25,22 @@ htmlcov/
 # Environment
 .env
 .env.local
+
+# Package lockfiles
+uv.lock
+poetry.lock
+Pipfile.lock
+
+# Internal project management (private)
+.planning/
+docs/
+
+# Claude Code internal config (except shipped skills)
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/ai-readiness-checker/
+!.claude/skills/ai-readiness-checker/skill.md
+
+# Backup files
+*.bak
