@@ -54,7 +54,7 @@ def _get_nlp():
     if _nlp is None:
         try:
             _nlp = __import__("spacy").load("en_core_web_sm")
-        except OSError:
+        except (OSError, ImportError):
             logger.warning(
                 "spaCy model 'en_core_web_sm' not found. "
                 "Install with: python -m spacy download en_core_web_sm. "
@@ -339,17 +339,14 @@ def analyze_qa_density(text: str, soup: BeautifulSoup | None = None) -> dict:
         }
 
     nlp = _get_nlp()
-    if nlp is None:
-        return {
-            "question_count": 0,
-            "answer_count": 0,
-            "total_sentences": len(text.split(".")),
-            "heading_question_count": 0,
-            "score": 0.0,
-        }
-
-    doc = nlp(text)
-    sentences = [s.text.strip() for s in doc.sents if s.text.strip()]
+    if nlp is not None:
+        doc = nlp(text)
+        sentences = [s.text.strip() for s in doc.sents if s.text.strip()]
+    else:
+        # Fallback: simple sentence splitting without spaCy
+        import re
+        raw = re.split(r'(?<=[.!?])\s+', text)
+        sentences = [s.strip() for s in raw if s.strip()]
 
     # Detect sentence-level questions
     question_indices = []

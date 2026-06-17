@@ -413,9 +413,9 @@ def test_spacy_model_missing():
     assert result.entity_score == 0.0, (
         f"Entity score should be 0.0 without spaCy, got {result.entity_score}"
     )
-    assert result.qa_density_score == 0.0, (
-        f"QA score should be 0.0 without spaCy, got {result.qa_density_score}"
-    )
+    # QA density now uses a fallback sentence splitter, so it may produce
+    # a non-zero score even without spaCy (questions are detected by _is_question
+    # which is a pure string function).
     # Other scores should still work (they don't need spaCy)
     assert result.readability_score > 0.0, "Readability should work without spaCy"
     assert result.heading_score > 0.0, "Headings should work without spaCy"
