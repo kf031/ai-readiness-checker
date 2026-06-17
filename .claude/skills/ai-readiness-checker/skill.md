@@ -14,95 +14,118 @@ description: >
 
 # AI Readiness Checker
 
-You score any website's visibility to AI search engines (ChatGPT, Perplexity, Claude, Google AI Overviews). You run the local `checker` CLI tool to do the analysis.
+You score any website's visibility to AI search engines. You run the local `checker` CLI tool, then cross-reference every finding with complementary skills the user could use to fix the problem.
 
 ## When to Use
 
-A user might say:
 - "Check https://mysite.com for AI readiness"
 - "Is my site visible to AI search?"
 - "I just built a website — will ChatGPT see it?"
 - "Score my site"
 - "How do I make my site AI-friendly?"
 
-If a URL is mentioned and the intent is analysis/fixing, use this skill.
-
 ## Workflow
 
-### 1. Quick Check (default)
-
-Run the CLI and present results:
+### Step 1: Run the checker
 
 ```bash
 python -m checker <url>
 ```
 
-The output shows:
-- Overall score (0-100) with letter grade (A-F)
-- Per-module score bars (robots.txt, llms.txt, schema, content)
-- Prioritized recommendations
+Parse the output. Note every recommendation, the grade, and per-module scores.
 
-Summarize the score and most important recommendation for the user.
+### Step 2: Present results + Meta-Skill Routing
 
-### 2. Fix Mode (when user wants improvements)
+For each failing module, map the finding to skills that can fix it. **This is the core value add — don't just report problems, route to solutions.**
 
-If the user asks to fix issues, run:
+Present results conversationally:
 
-```bash
-python -m checker <url> --fix
+```
+## AI Readiness Score: 62/100 (C)
+
+Here's what's holding your site back and which skills fix each problem:
+
+1. **No llms.txt found** (15% of score)
+   → Your built-in `fix-llms-txt` skill handles this. Run `checker <url> --fix`.
+
+2. **Missing FAQPage schema** (30% of score)
+   → Your built-in `fix-schema` skill handles this.
+
+3. **Low content readability** (35% of score)
+   → **Cross-skill route:** The `taste` skill can rewrite your copy for clarity.
+   If you don't have it: `claude plugins install taste`
+   Also try: `/uiux-promax` for layout improvements that affect readability.
+
+4. **Duplicate H1 tags, weak heading hierarchy**
+   → **Cross-skill route:** The `uiux-promax` skill can audit your page structure.
+   Also try: `max-ui` for heading/typography improvements.
 ```
 
-This generates an improved version of their page. Explain what skills were invoked and what changed.
+Always check whether the user HAS the recommended skill. If they don't, say:
 
-If the user has an LLM backend available:
+> "The `taste` skill would be perfect for fixing your readability issues, but you don't have it installed yet. Try `claude plugins install taste` or ask me to `/taste` your page copy."
 
-```bash
-python -m checker <url> --fix --llm-backend openai
-```
+### Step 3: Offer to fix in-place
 
-(Also supports `ollama` and `anthropic`)
-
-### 3. Batch Mode (multiple URLs)
+If the user wants fixes NOW, use the built-in skills:
 
 ```bash
-python -m checker --batch urls.csv -o results.csv
+python -m checker <url> --fix                    # template-based (fast, free)
+python -m checker <url> --fix --llm-backend openai  # AI-powered (smarter)
 ```
 
-### 4. Export Mode
+Then route remaining issues (design, tone, layout) to the complementary skills.
+
+## Meta-Skill Registry
+
+This is the mapping from checker findings to complementary skills. Update this as new skills emerge.
+
+| Checker Finding | Primary Route | Secondary Route | What It Does |
+|-----------------|---------------|-----------------|--------------|
+| Low readability score | `taste` skill | `copywriter` skill | Rewrites content for clarity and grade level |
+| Poor heading structure | `uiux-promax` | `max-ui` | Fixes typography, hierarchy, visual weight |
+| Missing schema / structured data | Built-in `fix-schema` | — | Generates JSON-LD blocks |
+| Missing llms.txt | Built-in `fix-llms-txt` | — | Generates llms.txt from page content |
+| Low Q&A density | Built-in `fix-qa` | `taste` skill | Generates FAQ content, improves answer quality |
+| Duplicate H1 / hierarchy violations | Built-in `fix-headings` | `uiux-promax` | Merges headings, fixes outline |
+| Low text-to-HTML ratio | `max-ui` | `uiux-promax` | Reduces HTML bloat, improves content density |
+| No entities detected (ORG, PRODUCT) | `taste` skill | — | Adds brand/product/org mentions naturally |
+| Overall poor design | `uiux-promax` | `max-ui` | Full-page visual and structural audit |
+| Thin SPA shell / JS-only | `n8n-*` skills | — | Suggests pre-rendering or SSR workflow |
+| Robots.txt blocks AI crawlers | Built-in CLI explainer | — | Shows exact robots.txt fix needed |
+
+## Skill Detection
+
+Before recommending a skill, check if the user has it:
 
 ```bash
-python -m checker <url> -o report.json
+# Check installed skills
+ls .claude/skills/ 2>/dev/null
 ```
 
-## Understanding Results
+If a recommended skill is missing, suggest installation. Don't force it — just say "this would help, here's how to get it."
 
-- **Score 85-100 (A):** Excellent — AI crawlers can fully see and understand this site
-- **Score 70-84 (B):** Good — mostly visible, minor issues to fix
-- **Score 55-69 (C):** Okay — some significant gaps for AI crawlers
-- **Score 40-54 (D):** Poor — AI crawlers are missing key information
-- **Score 0-39 (F):** Critical — AI crawlers cannot effectively access this site
+## Discovery Phrases
 
-## Four Signals Explained
+When routing to other skills, use natural language:
 
-| Signal | What it checks | Weight |
-|--------|---------------|--------|
-| robots.txt | Are AI bots (GPTBot, ClaudeBot, PerplexityBot, etc.) allowed to crawl? | 20% |
-| llms.txt | Is there a machine-readable content summary for LLMs? | 15% |
-| Schema | Is there structured data (JSON-LD, microdata) for products, FAQs, articles? | 30% |
-| Content | Is the text readable, well-structured, with good heading hierarchy and Q&A density? | 35% |
+- "The `taste` skill would nail this — it rewrites copy to match your brand voice while improving readability."
+- "This page would benefit from a `uiux-promax` audit. It checks layout, heading hierarchy, and visual flow."
+- "Your built-in `fix-schema` handles this. Want me to generate the missing JSON-LD right now?"
 
-## Common Fixes
+## Built-in Skills (always available)
 
-When recommendations come back, explain what they mean:
-- "GPTBot is blocked" → AI can't see the page at all — add `User-agent: GPTBot` with `Allow: /` to robots.txt
-- "No llms.txt found" → Create an llms.txt file summarizing key pages for LLMs
-- "Missing FAQPage schema" → Add JSON-LD structured data for Q&A content
-- "Multiple H1s" → Use exactly one `<h1>` per page for the main title
-- "Low Q&A density" → Add FAQ sections — AI search engines love Q&A format
+These skills ship with the checker and require no install:
+
+- `fix-schema` — Generates missing structured data
+- `fix-headings` — Fixes heading hierarchy
+- `fix-readability` — Detects/rewrites dense paragraphs
+- `fix-qa` — Generates Q&A sections
+- `fix-llms-txt` — Generates llms.txt
 
 ## Important
 
-- Always run `python -m checker` from the project root directory
-- The tool is already installed and configured in this project
-- Results are in plain text — summarize them conversationally for the user
-- If the user is vibe coding, suggest running the check after they have a deployed URL
+- Always run `python -m checker` from the project root
+- Cross-reference EVERY failing finding with the meta-skill registry
+- If a recommended skill is missing, mention how to install it **once**, then move on
+- Results are plain text — summarize conversationally

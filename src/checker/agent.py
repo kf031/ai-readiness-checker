@@ -100,6 +100,7 @@ def build_agent_report(pipeline_result: dict) -> dict:
                     "score": _safe_attr(content, "text_ratio", 0.0),
                     "ratio": _safe_attr(content, "raw_text_ratio", 0.0),
                 },
+                "entity_score": _safe_attr(content, "entity_score", 0.0),
             },
         },
     }

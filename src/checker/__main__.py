@@ -175,6 +175,50 @@ def _run_fix(pipeline_result: dict, backend_name: str | None = None) -> None:
         print("No improvements needed — all modules scored above threshold.")
     print(f"\n{output.explanation}")
 
+    # Meta-skill routing: suggest complementary tools for issues our skills can't fix
+    _print_skill_routing(report, set(output.skills_called))
+
+
+def _print_skill_routing(report: dict, skills_used: set[str]) -> None:
+    """Print meta-skill routing for issues not covered by built-in fix skills.
+
+    Maps remaining low scores to complementary tools and skills.
+    """
+    modules = report.get("modules", {})
+    routes = []
+
+    content = modules.get("content", {})
+    readability = content.get("readability", {})
+    text_ratio = content.get("text_ratio", {})
+    entities = score_attr(modules, "content", "entity_score")
+
+    if readability.get("score", 1.0) < 0.5 and "fix-readability" not in skills_used:
+        routes.append(("Low readability", "taste skill (copy tone & clarity), Hemingway App"))
+    if text_ratio.get("score", 1.0) < 0.3:
+        routes.append(("Low text-to-HTML ratio", "uiux-promax (trim HTML bloat), max-ui (clean layout)"))
+    if entities is not None and entities < 0.3:
+        routes.append(("Few named entities detected", "taste skill (add brand/product mentions naturally)"))
+    if content.get("headings", {}).get("score", 1.0) < 0.5 and "fix-headings" not in skills_used:
+        routes.append(("Weak heading structure", "uiux-promax (hierarchy audit), max-ui (typography)"))
+
+    if not routes:
+        return
+
+    print(f"\n{'─' * 60}")
+    print("Beyond Built-in Fixes — Complementary Tools")
+    print(f"{'─' * 60}")
+    print("These issues may need tools our built-in skills can't fully address:\n")
+    for issue, suggestion in routes:
+        print(f"  {issue} → {suggestion}")
+    print("\nTip: Claude Code users can invoke these as skills (e.g., /taste, /uiux-promax)")
+
+
+def score_attr(modules: dict, module: str, attr: str) -> float | None:
+    """Safely drill into the report dict structure."""
+    m = modules.get(module, {})
+    val = m.get(attr, m.get("score"))
+    return float(val) if val is not None else None
+
 
 def _run_batch(batch_file: str, timeout: float, verbose: bool, fix: bool,
                backend_name: str | None, output_file: str | None) -> int:
