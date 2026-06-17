@@ -10,7 +10,7 @@ Themes:
 
 
 from rich.align import Align
-from rich.box import HEAVY, ROUNDED
+from rich.box import ROUNDED
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.text import Text
@@ -194,10 +194,10 @@ def display_scouter_card(
     pipeline_result: dict,
     console: Console | None = None,
 ) -> None:
-    """Render a DBZ Scouter Power Level display.
+    """Render a DBZ Scouter power-level reading — green monocle HUD.
 
-    Green monochrome theme — feels like you're looking through a scouter visor.
-    Scores become power levels, grades become warrior classes.
+    No card borders — just the scouter lens with targeting reticle,
+    a large COMBAT POWER number inside, and scan readouts below.
     """
     if console is None:
         console = Console()
@@ -208,43 +208,48 @@ def display_scouter_card(
 
     power = _power_level(report.overall_score / 100.0)
     class_name, class_style = _warrior_class(power)
+    G = "bright_green"
 
-    SP = Text("")
+    # ── Build the scouter lens ──
+    # Every line is exactly 45 chars. Inner box is 25 wide (23 interior).
+    IW = 23  # inner content width (between ║ marks)
+    p_str = str(power).center(IW)
+    c_str = class_name[:IW].center(IW)
+    tgt_text = f"TARGET: {report.url}"
+    if len(tgt_text) > 35:
+        tgt_text = tgt_text[:35]
+    tgt_line = f" {tgt_text} ".ljust(37)
 
-    lines: list = []
+    L45 = "{:<45}".format
+    B = " " * 6   # ║ margin inside lens for inner box
+    E = " " * 6   # ║ margin inside lens for inner box
 
-    # ── Scouter header ──
-    # ASCII scouter lens motif
-    lines.append(Align.center(Text(
-        "┌──────────────┐\n"
-        "│     ◉     │\n"
-        "└──────────────┘",
-        style="bold green",
-    )))
-    lines.append(Align.center(Text("S C O U T E R", style="bold green")))
-    lines.append(Align.center(Text("P O W E R   L E V E L   R E A D I N G", style="green")))
-    lines.append(SP)
+    lines = [
+        L45("         ╭" + "─" * 34 + "╮"),
+        L45("        ╱" + " " * 35 + "╲"),
+        L45("       ╱" + " " * 36 + "╲"),
+        L45("      │" + B + "╔" + "═" * 23 + "╗" + E + "│"),
+        L45("      │" + B + "║" + " " * IW + "║" + E + "│"),
+        L45("      │" + B + "║" + "COMBAT  POWER".center(IW) + "║" + E + "│"),
+        L45("      │" + B + "║" + " " * IW + "║" + E + "│"),
+        L45("      │" + B + "║" + p_str + "║" + E + "│"),
+        L45("      │" + B + "║" + " " * IW + "║" + E + "│"),
+        L45("      │" + B + "║" + c_str + "║" + E + "│"),
+        L45("      │" + B + "║" + " " * IW + "║" + E + "│"),
+        L45("      │" + B + "╚" + "═" * 23 + "╝" + E + "│"),
+        L45("      │" + tgt_line + "│"),
+        L45("       ╲" + " " * 36 + "╱"),
+        L45("        ╲" + " " * 35 + "╱"),
+        L45("         ╰" + "─" * 34 + "╯"),
+    ]
 
-    # ── Target ──
-    lines.append(Align.center(Text(f"TARGET: {report.url}", style="dim green")))
-    lines.append(SP)
+    console.print()
+    console.print(Align.center(Text("\n".join(lines), style=G)))
 
-    # ── Power level reading ──
-    power_text = Text(f" {power} ", style="bold bright_green on black")
+    console.print()
 
-    power_box = Panel(
-        Group(
-            Align.center(power_text),
-            Align.center(Text(f"CLASS: {class_name}", style=class_style)),
-        ),
-        box=ROUNDED,
-        border_style="bright_green",
-        padding=(0, 2),
-    )
-    lines.append(Align.center(power_box))
-    lines.append(SP)
-
-    # ── Module readings (scouter-style bars) ──
+    # ── Sub-scan data bars ──
+    console.print(Text("  ◈  SUB-SCAN DATA", style="bold green"))
     for module_key in MODULE_ORDER:
         data = report.module_breakdown.get(module_key)
         if data is None:
@@ -253,17 +258,18 @@ def display_scouter_card(
         bar = _scouter_bar(score)
         name = MODULE_DISPLAY_NAMES[module_key]
         pct = int(round(score * 100))
-        line = Text.assemble(
-            f"  {name:<13} ",
-            (bar, "green"),
-            f"  {pct}%",
+        console.print(
+            Text.assemble(
+                f"    {name:<13} ",
+                (bar, "green"),
+                f"  {pct}%",
+            )
         )
-        lines.append(line)
 
-    # ── Incomplete indicator ──
+    # ── Incomplete scan ──
     if not complete:
-        lines.append(SP)
-        lines.append(
+        console.print()
+        console.print(
             Align.center(
                 Text(
                     f"[INCOMPLETE SCAN — {len(pipeline_result['stages_run'])}/5 stages]",
@@ -272,45 +278,28 @@ def display_scouter_card(
             )
         )
 
-    # ── Threat assessment (recommendations) ──
+    # ── Threat assessment ──
     if report.recommendations:
-        lines.append(SP)
-        lines.append(Text("  THREAT ASSESSMENT:", style="bold green"))
+        console.print()
+        console.print(Text("  THREAT ASSESSMENT:", style="bold green"))
         for rec in report.recommendations:
-            icon = _threat_icon(rec["priority"])
-            line = Text.assemble(
-                f"    {icon} ",
-                (f"[{rec['priority']}]", "yellow"),
-                "  ",
-                Text(rec["message"], style="green"),
+            ico = {"HIGH": "⚠", "MEDIUM": "◆", "LOW": "○"}.get(rec["priority"], "·")
+            console.print(
+                Text.assemble(
+                    f"    {ico} ",
+                    (f"[{rec['priority']}]", "yellow"),
+                    "  ",
+                    Text(rec["message"][:64], style="green"),
+                )
             )
-            lines.append(line)
 
-    # ── Scan errors ──
+    # ── Errors ──
     if errors:
-        lines.append(SP)
+        console.print()
         for err in errors:
-            lines.append(Text(f"  ✗ SCAN ERROR: {err}", style="red"))
+            console.print(Text(f"  ✗ SCAN ERROR: {err}", style="red"))
 
-    lines.append(SP)
-
-    # ── Render in scouter frame ──
-    card = Panel(
-        Group(*lines),
-        box=HEAVY,
-        border_style="green",
-        padding=(1, 1),
-    )
     console.print()
-    console.print(card)
-    console.print()
-
-
-def _threat_icon(priority: str) -> str:
-    """DBZ-themed threat level icons."""
-    return {"HIGH": "⚠", "MEDIUM": "◆", "LOW": "○"}.get(
-        priority, "·"
-    )  # ⚠, ◆, ○
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
