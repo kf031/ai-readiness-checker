@@ -1,0 +1,37 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/ai-readiness-checker/
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Build package
+        run: |
+          pip install build
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # Uses trusted publishing (OIDC).
+        # To configure:
+        #   1. Go to https://pypi.org/manage/project/ai-readiness-checker/settings/publishing
+        #   2. Add a Trusted Publisher with:
+        #      - Owner: kf031
+        #      - Repository: ai-readiness-checker
+        #      - Workflow: publish.yml
+        #      - Environment: pypi

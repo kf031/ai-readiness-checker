@@ -1,13 +1,13 @@
-"""Rich-formatted terminal score card renderer for the AI Readiness Checker.
+"""Rich-formatted terminal score card for the AI Readiness Checker.
 
 Pure presentation layer — consumes a pipeline result dict containing
-a ScoreReport and renders a formatted score card using Rich components.
+a ScoreReport and renders a premium score card using Rich components.
 """
 
-from rich.console import Console
+from rich.align import Align
+from rich.box import ROUNDED
+from rich.console import Console, Group
 from rich.panel import Panel
-from rich.rule import Rule
-from rich.table import Table
 from rich.text import Text
 
 GRADE_COLORS = {
@@ -16,6 +16,14 @@ GRADE_COLORS = {
     "C": "yellow",
     "D": "orange3",
     "F": "red",
+}
+
+GRADE_BG = {
+    "A": "on green",
+    "B": "on blue",
+    "C": "on yellow",
+    "D": "on orange3",
+    "F": "on red",
 }
 
 MODULE_ORDER = ["robots", "llms_txt", "schema", "content"]
@@ -27,17 +35,17 @@ MODULE_DISPLAY_NAMES = {
     "content": "Content",
 }
 
+PRIORITY_ICONS = {
+    "HIGH": ("▲", "red"),
+    "MEDIUM": ("■", "yellow"),
+    "LOW": ("▼", "dim"),
+}
 
-def _render_score_bar(score: float, width: int = 20) -> str:
-    """Render a Unicode block character score bar.
+BAR_WIDTH = 20
 
-    Args:
-        score: Float in [0.0, 1.0].
-        width: Total character width of the bar.
 
-    Returns:
-        String of ``width`` characters using ``█`` (filled) and ``░`` (empty).
-    """
+def _render_score_bar(score: float, width: int = BAR_WIDTH) -> str:
+    """Render a Unicode block character score bar."""
     filled = int(round(score * width))
     return "█" * filled + "░" * (width - filled)
 
@@ -46,16 +54,12 @@ def display_score_card(
     pipeline_result: dict,
     console: Console | None = None,
 ) -> None:
-    """Render a Rich-formatted AI Readiness Score Card to the terminal.
+    """Render a premium Rich-formatted AI Readiness Score Card.
 
     Args:
-        pipeline_result: Dict with keys:
-            - ``report``: ScoreReport (never None)
-            - ``errors``: list[str] (error messages, may be empty)
-            - ``complete``: bool (True if all 5 stages ran)
-            - ``stages_run``: list[str] (stage names in execution order)
-        console: Optional Rich Console instance. If None, a default Console
-            is created. Useful for test capture.
+        pipeline_result: Dict from run_pipeline() with keys:
+            report, errors, complete, stages_run.
+        console: Optional Rich Console. Created if None.
     """
     if console is None:
         console = Console()
@@ -63,86 +67,81 @@ def display_score_card(
     report = pipeline_result["report"]
     errors = pipeline_result["errors"]
     complete = pipeline_result["complete"]
-    stages_run = pipeline_result["stages_run"]
 
-    # 1. Blank line + header
-    console.print()
-    console.print(Rule(title="AI Readiness Score Card"))
+    SP = Text("")  # spacer (empty line)
 
-    # 2. URL
-    console.print(f"URL: {report.url}")
+    # --- Build the card contents ---
+    lines: list = []
 
-    # 3. Completeness indicator
-    if not complete:
-        console.print(
-            f"  [dim](Partial report — {len(stages_run)} of 5 stages completed)[/dim]"
-        )
+    # Header
+    lines.append(Align.center(Text("AI Readiness Score Card", style="bold")))
+    lines.append(Align.center(Text(report.url, style="dim")))
+    lines.append(SP)
 
-    # 4. Grade display
+    # Grade badge + overall score — built as inline text for single-line layout
     grade_color = GRADE_COLORS.get(report.grade, "white")
-    grade_text = Text(f" {report.grade} ", style=f"bold {grade_color} on default")
-    console.print(
-        Panel(
-            f"{grade_text}  Overall Score: {report.overall_score}/100",
-            title="Result",
+    grade_bg = GRADE_BG.get(report.grade, "on default")
+    badge_text = Text(f" {report.grade} ", style=f"bold white {grade_bg}")
+    score_text = Text(f"  {report.overall_score}/100", style=f"bold {grade_color}")
+    lines.append(Align.center(Text.assemble(badge_text, score_text)))
+    lines.append(SP)
+
+    # Incomplete indicator
+    if not complete:
+        lines.append(
+            Align.center(
+                Text(
+                    f"(Partial — {len(pipeline_result['stages_run'])} of 5 stages completed)",
+                    style="dim",
+                )
+            )
         )
-    )
+        lines.append(SP)
 
-    # 5. Module breakdown table
-    table = Table(title="Module Breakdown")
-    table.add_column("Module", style="cyan")
-    table.add_column("Score", justify="right")
-    table.add_column("Weight", justify="right")
-    table.add_column("Weighted", justify="right")
-    table.add_column("Bar", justify="left")
-
+    # Module breakdown
     for module_key in MODULE_ORDER:
         data = report.module_breakdown.get(module_key)
         if data is None:
             continue
         score = data["score"]
         bar = _render_score_bar(score)
-        display_name = MODULE_DISPLAY_NAMES[module_key]
-        table.add_row(
-            display_name,
-            f"{score:.2f}",
-            f"{data['weight']:.0%}",
-            f"{data['weighted']:.1f}",
-            bar,
+        name = MODULE_DISPLAY_NAMES[module_key]
+        weight = data["weight"]
+        line = Text.assemble(
+            f"  {name:<13} ",
+            (bar, "bold"),
+            f"  ({score:.2f})",
+            f"  w: {weight:.0%}",
         )
+        lines.append(line)
 
-    console.print(table)
-
-    # 6. Recommendations (if non-empty)
+    # Recommendations (if non-empty)
     if report.recommendations:
-        rec_table = Table(title="Recommendations")
-        rec_table.add_column("Priority", style="bold")
-        rec_table.add_column("Module", style="cyan")
-        rec_table.add_column("Message")
-
+        lines.append(SP)
         for rec in report.recommendations:
-            priority_style = {
-                "HIGH": "red",
-                "MEDIUM": "yellow",
-                "LOW": "dim",
-            }.get(rec["priority"], "")
-            rec_table.add_row(
-                f"[{priority_style}]{rec['priority']}[/{priority_style}]",
-                rec["module"],
+            icon, style = PRIORITY_ICONS.get(rec["priority"], ("·", "dim"))
+            line = Text.assemble(
+                f"  {icon} ",
+                (f"[{rec['priority']}]", style),
+                "  ",
                 rec["message"],
             )
+            lines.append(line)
 
-        console.print(rec_table)
-
-    # 7. Pipeline errors (if non-empty)
+    # Pipeline errors
     if errors:
-        console.print(
-            Panel(
-                "\n".join(errors),
-                title="[red]Pipeline Errors[/red]",
-                border_style="red",
-            )
-        )
+        lines.append(SP)
+        for err in errors:
+            lines.append(Text(f"  ✗ {err}", style="red"))
 
-    # 8. Trailing blank line
+    lines.append(SP)
+
+    # --- Render as outer card ---
+    card = Panel(
+        Group(*lines),
+        box=ROUNDED,
+        padding=(1, 0),
+    )
+    console.print()
+    console.print(card)
     console.print()

@@ -32,7 +32,9 @@ def test_cli_url_argument_parsed(mock_run, mock_display):
 
     result = main(["https://example.com"])
     assert result == 0
-    mock_run.assert_called_once_with("https://example.com", timeout=10.0, verbose=False)
+    assert mock_run.call_args[0] == ("https://example.com",)
+    assert mock_run.call_args[1]["timeout"] == 10.0
+    assert mock_run.call_args[1]["verbose"] is False
     mock_display.assert_called_once()
 
 

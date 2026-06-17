@@ -11,9 +11,75 @@ import json
 import sys
 from typing import Any
 
+from rich.box import ROUNDED
+from rich.console import Console, Group
+from rich.live import Live
+from rich.panel import Panel
+from rich.text import Text
+
 from .cli_renderer import display_score_card
 from .contracts import CrawlError
 from .orchestrator import run_pipeline
+
+# --- Animated progress display ---
+
+STAGE_ORDER = ["crawl", "access_signals", "schema", "content", "score"]
+
+STAGE_LABELS = {
+    "crawl": "Fetching page",
+    "access_signals": "Checking robots.txt & llms.txt",
+    "schema": "Analyzing structured data",
+    "content": "Analyzing content quality",
+    "score": "Generating score report",
+}
+
+
+def _build_progress_panel(stage_states: dict) -> Group:
+    """Build a Rich renderable showing current pipeline progress."""
+    lines: list[Text] = []
+    for key in STAGE_ORDER:
+        label = STAGE_LABELS.get(key, key)
+        state = stage_states.get(key, "pending")
+        detail = stage_states.get(f"{key}_detail", "")
+
+        if state == "pending":
+            prefix, style = "  ○ ", "dim"
+            suffix = ""
+        elif state == "running":
+            prefix, style = "  ◉ ", "bold cyan"
+            suffix = ""
+        else:  # done
+            prefix, style = "  ✓ ", "bold green"
+            suffix = f" — {detail}" if detail else ""
+
+        lines.append(Text(f"{prefix}{label}{suffix}", style=style))
+
+    return Group(*lines)
+
+
+def _run_pipeline_with_progress(url: str, timeout: float, verbose: bool) -> dict:
+    """Run the pipeline with an animated progress display.
+
+    In verbose mode, stage names are printed as text.
+    In normal mode, a Rich Live display shows animated stage progress.
+    """
+    if verbose:
+        return run_pipeline(url, timeout=timeout, verbose=True)
+
+    stages: dict[str, str] = {}
+
+    def on_stage(key: str, status: str, detail: str | None):
+        stages[key] = status
+        if detail:
+            stages[f"{key}_detail"] = detail
+
+    with Live(
+        _build_progress_panel(stages),
+        console=None,
+        refresh_per_second=8,
+        transient=True,
+    ):
+        return run_pipeline(url, timeout=timeout, verbose=False, on_stage=on_stage)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -111,8 +177,8 @@ def main(argv: list[str] | None = None) -> int:
     if not args.url:
         parser.error("url is required (or use --batch or --mcp)")
 
-    # Run the full analysis pipeline
-    result = run_pipeline(args.url, timeout=args.timeout, verbose=args.verbose)
+    # Run the full analysis pipeline (with animated progress in non-verbose mode)
+    result = _run_pipeline_with_progress(args.url, timeout=args.timeout, verbose=args.verbose)
 
     # Display the formatted score card
     display_score_card(result)
@@ -137,14 +203,24 @@ def _run_fix(pipeline_result: dict, backend_name: str | None = None) -> None:
     """
     from .agent import build_agent_report, run_llm_agent
 
+    console = Console()
+
     fetch_result = pipeline_result.get("fetch_result")
     if fetch_result is None or isinstance(fetch_result, CrawlError):
-        print("\n[fix] Cannot generate improvements — page fetch failed.")
+        console.print()
+        console.print(
+            Panel("[bold red]Cannot generate improvements[/] — page fetch failed.",
+                  box=ROUNDED)
+        )
         return
 
     html = fetch_result.html if hasattr(fetch_result, 'html') else ""
     if not html:
-        print("\n[fix] Cannot generate improvements — no HTML content available.")
+        console.print()
+        console.print(
+            Panel("[bold red]Cannot generate improvements[/] — no HTML content available.",
+                  box=ROUNDED)
+        )
         return
 
     report = build_agent_report(pipeline_result)
@@ -155,61 +231,67 @@ def _run_fix(pipeline_result: dict, backend_name: str | None = None) -> None:
         try:
             from .llm_backends import get_backend
             backend = get_backend(backend_name)
-            print(f"\n[fix] Using LLM backend: {backend_name}")
+            console.print(f"\n[bold]Using LLM backend:[/] {backend_name}")
         except Exception as e:
-            print(f"\n[fix] LLM backend '{backend_name}' unavailable: {e}")
-            print("[fix] Falling back to template-based skills.")
+            console.print(f"\n[bold red]LLM backend '{backend_name}' unavailable:[/] {e}")
+            console.print("[dim]Falling back to template-based skills.[/]")
 
     output = run_llm_agent(report, html, backend=backend)
 
-    print(f"\n{'─' * 60}")
-    print("AI Improvement Summary")
-    print(f"{'─' * 60}")
+    # Build fix summary panel
+    fix_lines: list[Text] = []
     if output.skills_called:
-        print(f"Skills invoked: {', '.join(output.skills_called)}")
-        print(f"Changes made: {len(output.changes)}")
-        for change in output.changes:
-            print(f"  • {change}")
+        fix_lines.append(Text(f"\n{len(output.skills_called)} skill(s) applied:", style="bold"))
+        for i, change in enumerate(output.changes):
+            is_last = (i == len(output.changes) - 1)
+            prefix = "  └─" if is_last else "  ├─"
+            fix_lines.append(Text(f"{prefix} {change}"))
     else:
-        print("No improvements needed — all modules scored above threshold.")
-    print(f"\n{output.explanation}")
+        fix_lines.append(Text("No improvements needed — all modules scored above threshold."))
 
-    # Meta-skill routing: suggest complementary tools for issues our skills can't fix
-    _print_skill_routing(report, set(output.skills_called))
+    if output.explanation:
+        fix_lines.append(Text(""))
+        fix_lines.append(Text(output.explanation, style="dim"))
+
+    console.print()
+    console.print(Panel(Group(*fix_lines), title="AI Fix Summary", box=ROUNDED))
+
+    # Meta-skill routing
+    _print_skill_routing(report, set(output.skills_called), console)
 
 
-def _print_skill_routing(report: dict, skills_used: set[str]) -> None:
-    """Print meta-skill routing for issues not covered by built-in fix skills.
-
-    Maps remaining low scores to complementary tools and skills.
-    """
+def _print_skill_routing(report: dict, skills_used: set[str], console: Console | None = None) -> None:
+    """Print meta-skill routing for issues not covered by built-in fix skills."""
     modules = report.get("modules", {})
     routes = []
 
     content = modules.get("content", {})
     readability = content.get("readability", {})
     text_ratio = content.get("text_ratio", {})
-    entities = score_attr(modules, "content", "entity_score")
 
     if readability.get("score", 1.0) < 0.5 and "fix-readability" not in skills_used:
-        routes.append(("Low readability", "taste skill (copy tone & clarity), Hemingway App"))
+        routes.append(("Low readability", "taste skill (copy tone & clarity)"))
     if text_ratio.get("score", 1.0) < 0.3:
-        routes.append(("Low text-to-HTML ratio", "uiux-promax (trim HTML bloat), max-ui (clean layout)"))
-    if entities is not None and entities < 0.3:
-        routes.append(("Few named entities detected", "taste skill (add brand/product mentions naturally)"))
+        routes.append(("Low text-to-HTML ratio", "uiux-promax, max-ui (clean layout)"))
+    if content.get("entity_score", 1.0) < 0.3:
+        routes.append(("Few named entities detected", "taste skill (add brand mentions)"))
     if content.get("headings", {}).get("score", 1.0) < 0.5 and "fix-headings" not in skills_used:
-        routes.append(("Weak heading structure", "uiux-promax (hierarchy audit), max-ui (typography)"))
+        routes.append(("Weak heading structure", "uiux-promax (hierarchy audit)"))
 
     if not routes:
         return
 
-    print(f"\n{'─' * 60}")
-    print("Beyond Built-in Fixes — Complementary Tools")
-    print(f"{'─' * 60}")
-    print("These issues may need tools our built-in skills can't fully address:\n")
+    if console is None:
+        console = Console()
+
+    route_lines = [Text("Complementary tools for remaining issues:", style="bold")]
     for issue, suggestion in routes:
-        print(f"  {issue} → {suggestion}")
-    print("\nTip: Claude Code users can invoke these as skills (e.g., /taste, /uiux-promax)")
+        route_lines.append(Text(f"  {issue} → {suggestion}"))
+    route_lines.append(Text(""))
+    route_lines.append(Text("Tip: Claude Code users can invoke these as skills", style="dim"))
+
+    console.print()
+    console.print(Panel(Group(*route_lines), title="Beyond Built-in Fixes", box=ROUNDED))
 
 
 def score_attr(modules: dict, module: str, attr: str) -> float | None:

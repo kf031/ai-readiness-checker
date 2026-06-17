@@ -19,25 +19,35 @@ This tool checks four things AI search engines look for, gives you a 0-100 score
 $ checker https://my-site.com
 ```
 
+While it runs, you see real-time progress:
+
 ```
-─────────────────────────── AI Readiness Score Card ────────────────────────────
-URL: https://my-site.com
+  ◉  Fetching page
+  ○  Checking robots.txt & llms.txt
+  ○  Analyzing structured data
+  ○  Analyzing content quality
+  ○  Generating score report
+```
 
-  C   Overall Score: 62.4/100
+Then the score card appears:
 
-                        Module Breakdown
-┏━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Module     ┃ Score ┃ Weight ┃ Weighted ┃ Bar                  ┃
-┡━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
-│ Robots.txt │  0.80 │    20% │     16.0 │ ████████████████░░░░ │
-│ llms.txt   │  0.00 │    15% │      0.0 │ ░░░░░░░░░░░░░░░░░░░░ │
-│ Schema     │  0.40 │    30% │     12.0 │ ████████░░░░░░░░░░░░ │
-│ Content    │  0.55 │    35% │     19.3 │ ███████████░░░░░░░░░ │
-└────────────┴───────┴────────┴──────────┴──────────────────────┘
-
-Recommendations:
-  [HIGH]   No llms.txt found. Create one so AI systems can navigate your site.
-  [MEDIUM] Missing FAQPage schema. AI search favors Q&A-structured content.
+```
+╭──────────────────────────────────────────────────────────╮
+│                                                          │
+│                  AI Readiness Score Card                 │
+│                    https://my-site.com                   │
+│                                                          │
+│                      C   62.4/100                        │
+│                                                          │
+│   Robots.txt   ████████████████░░░░  (0.80)  w: 20%     │
+│   llms.txt     ░░░░░░░░░░░░░░░░░░░░  (0.00)  w: 15%     │
+│   Schema       ████████░░░░░░░░░░░░  (0.40)  w: 30%     │
+│   Content      ███████████░░░░░░░░░  (0.55)  w: 35%     │
+│                                                          │
+│   ▲ HIGH    No llms.txt found                            │
+│   ■ MEDIUM  Missing FAQPage schema                      │
+│                                                          │
+╰──────────────────────────────────────────────────────────╯
 ```
 
 ## Fix it automatically

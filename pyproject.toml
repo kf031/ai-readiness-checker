@@ -7,7 +7,8 @@ name = "ai-readiness-checker"
 version = "0.1.0"
 description = "Open-source tool that scores any website's AI search engine visibility with CLI and Streamlit UI"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [
     {name = "AI Readiness Checker contributors"}
@@ -17,7 +18,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -52,7 +52,7 @@ Issues = "https://github.com/kf031/ai-readiness-checker/issues"
 checker = "checker.__main__:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0,<9.0", "ruff"]
+dev = ["pytest>=8.0,<9.0", "ruff", "build>=1.0", "twine>=5.0"]
 nlp = ["spacy>=3.7,<4.0"]
 
 [tool.setuptools.packages.find]
