@@ -13,13 +13,13 @@ import importlib
 from typing import Callable
 
 _SKILL_REGISTRY: dict[str, str] = {
-    "fix-schema":        "src.checker.skills.fix_schema",
-    "fix-headings":      "src.checker.skills.fix_headings",
-    "fix-readability":   "src.checker.skills.fix_readability",
-    "fix-qa":            "src.checker.skills.fix_qa",
-    "fix-llms-txt":      "src.checker.skills.fix_llms_txt",
-    "render-preview":    "src.checker.skills.render_preview",
-    "explain-changes":   "src.checker.skills.explain_changes",
+    "fix-schema":        "checker.skills.fix_schema",
+    "fix-headings":      "checker.skills.fix_headings",
+    "fix-readability":   "checker.skills.fix_readability",
+    "fix-qa":            "checker.skills.fix_qa",
+    "fix-llms-txt":      "checker.skills.fix_llms_txt",
+    "render-preview":    "checker.skills.render_preview",
+    "explain-changes":   "checker.skills.explain_changes",
 }
 
 

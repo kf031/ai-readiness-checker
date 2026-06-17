@@ -1,9 +1,18 @@
 """Shared fixtures for AI Readiness Checker tests."""
 
+import sys
+from pathlib import Path
 from datetime import datetime, timezone
 
 import pytest
 from bs4 import BeautifulSoup
+
+# Make 'checker' package importable from the src directory.
+# With src-layout, tests run from project root; this ensures
+# 'from checker.contracts import ...' works without pip install.
+_src = Path(__file__).parent.parent / "src"
+if str(_src) not in sys.path:
+    sys.path.insert(0, str(_src))
 
 
 # -- Sample HTML fixtures --
@@ -446,7 +455,7 @@ def mock_response_map(
 @pytest.fixture
 def sample_fetch_result():
     """Return a valid FetchResult for orchestrator tests."""
-    from src.checker.contracts import FetchResult
+    from checker.contracts import FetchResult
 
     html = "<html><body><p>Test</p></body></html>"
     return FetchResult(
@@ -461,7 +470,7 @@ def sample_fetch_result():
 @pytest.fixture
 def sample_robots_result():
     """Return a valid RobotsResult for orchestrator tests."""
-    from src.checker.contracts import RobotsResult
+    from checker.contracts import RobotsResult
 
     return RobotsResult(
         url="https://example.com",
@@ -473,7 +482,7 @@ def sample_robots_result():
 @pytest.fixture
 def sample_llms_result():
     """Return a valid LlmsResult for orchestrator tests."""
-    from src.checker.contracts import LlmsResult
+    from checker.contracts import LlmsResult
 
     return LlmsResult(
         url="https://example.com",
@@ -484,7 +493,7 @@ def sample_llms_result():
 @pytest.fixture
 def sample_schema_analysis():
     """Return a valid SchemaAnalysis for orchestrator tests."""
-    from src.checker.contracts import SchemaAnalysis
+    from checker.contracts import SchemaAnalysis
 
     return SchemaAnalysis(
         url="https://example.com",
@@ -496,7 +505,7 @@ def sample_schema_analysis():
 @pytest.fixture
 def sample_content_analysis():
     """Return a valid ContentAnalysis for orchestrator tests."""
-    from src.checker.contracts import ContentAnalysis
+    from checker.contracts import ContentAnalysis
 
     return ContentAnalysis(
         url="https://example.com",
@@ -507,7 +516,7 @@ def sample_content_analysis():
 @pytest.fixture
 def sample_crawl_error():
     """Return a CrawlError for orchestrator tests."""
-    from src.checker.contracts import CrawlError
+    from checker.contracts import CrawlError
 
     return CrawlError(
         url="https://example.com",
@@ -521,7 +530,7 @@ def sample_crawl_error():
 @pytest.fixture
 def sample_score_report():
     """Return a complete ScoreReport for dashboard tests."""
-    from src.checker.contracts import ScoreReport
+    from checker.contracts import ScoreReport
 
     return ScoreReport(
         url="https://example.com",

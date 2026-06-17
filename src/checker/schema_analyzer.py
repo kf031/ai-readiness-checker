@@ -28,7 +28,7 @@ from datetime import datetime, timezone
 
 import extruct
 
-from src.checker.contracts import FetchResult, SchemaAnalysis
+from checker.contracts import FetchResult, SchemaAnalysis
 
 logger = logging.getLogger(__name__)
 

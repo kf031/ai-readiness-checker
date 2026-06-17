@@ -11,15 +11,15 @@ import logging
 import math
 from datetime import datetime, timezone
 
-from src.checker.contracts import (
+from checker.contracts import (
     ContentAnalysis,
     LlmsResult,
     RobotsResult,
     SchemaAnalysis,
     ScoreReport,
 )
-from src.checker.robots_txt import compute_bot_score
-from src.checker.llms_txt import compute_llms_score
+from checker.robots_txt import compute_bot_score
+from checker.llms_txt import compute_llms_score
 
 logger = logging.getLogger(__name__)
 

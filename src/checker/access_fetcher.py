@@ -13,8 +13,8 @@ from typing import Tuple
 
 import httpx
 
-from src.checker.robots_txt import fetch_robots_txt, RobotsResult
-from src.checker.llms_txt import fetch_llms_txt, LlmsResult
+from checker.robots_txt import fetch_robots_txt, RobotsResult
+from checker.llms_txt import fetch_llms_txt, LlmsResult
 
 
 # ---- Constants ----
@@ -104,7 +104,7 @@ def _process_robots_response(url: str, response, now) -> RobotsResult:
     Delegates analysis to robots_txt.analyze_robots() to avoid
     duplicate HTTP calls — only raw text flows through.
     """
-    from src.checker.robots_txt import analyze_robots, MAX_ROBOTS_SIZE
+    from checker.robots_txt import analyze_robots, MAX_ROBOTS_SIZE
 
     status_code = response.status_code
 
@@ -137,7 +137,7 @@ def _process_llms_response(url: str, response, now) -> LlmsResult:
     Delegates validation to llms_txt.validate_llms_txt() to avoid
     duplicate HTTP calls — only raw text flows through.
     """
-    from src.checker.llms_txt import validate_llms_txt, MAX_LLMS_SIZE
+    from checker.llms_txt import validate_llms_txt, MAX_LLMS_SIZE
 
     status_code = response.status_code
 

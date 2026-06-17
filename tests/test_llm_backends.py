@@ -1,7 +1,7 @@
 """Tests for v3 LLM backend abstraction."""
 
 import pytest
-from src.checker.llm_backends import get_backend, OllamaBackend, OpenAIBackend, AnthropicBackend, BACKENDS
+from checker.llm_backends import get_backend, OllamaBackend, OpenAIBackend, AnthropicBackend, BACKENDS
 
 
 def test_backend_registry_complete():
@@ -40,7 +40,7 @@ def test_get_backend_default_models():
 def test_fix_schema_with_backend():
     """fix-schema skill uses LLM backend when provided (mock)."""
     from unittest.mock import Mock
-    from src.checker.skills.fix_schema import execute
+    from checker.skills.fix_schema import execute
 
     html = """<html><head><title>My Store</title></head>
     <body><h1>Buy Our Product</h1><p>Only $19.99. Free shipping worldwide.</p></body></html>"""
@@ -80,7 +80,7 @@ def test_fix_schema_with_backend():
 
 def test_fix_schema_without_backend_uses_templates():
     """fix-schema skill falls back to templates when no backend."""
-    from src.checker.skills.fix_schema import execute
+    from checker.skills.fix_schema import execute
 
     html = "<html><head></head><body></body></html>"
     report = {
@@ -104,7 +104,7 @@ def test_fix_schema_without_backend_uses_templates():
 def test_fix_headings_with_backend():
     """fix-headings uses LLM to rewrite headings when backend provided."""
     from unittest.mock import Mock
-    from src.checker.skills.fix_headings import execute
+    from checker.skills.fix_headings import execute
 
     html = """<html><body>
     <h1>Welcome</h1><h1>Also Welcome</h1>
@@ -140,7 +140,7 @@ def test_fix_headings_with_backend():
 
 def test_fix_headings_without_backend_falls_back():
     """fix-headings uses regex merge when no backend."""
-    from src.checker.skills.fix_headings import execute
+    from checker.skills.fix_headings import execute
 
     html = "<html><body><h1>Welcome</h1><h1>Also Welcome</h1><h2>Details</h2></body></html>"
     report = {
@@ -157,7 +157,7 @@ def test_fix_headings_without_backend_falls_back():
 
 def test_fix_headings_no_issues_skips():
     """fix-headings returns no changes when no issues."""
-    from src.checker.skills.fix_headings import execute
+    from checker.skills.fix_headings import execute
 
     html = "<html><body><h1>Welcome</h1></body></html>"
     report = {"modules": {"content": {"headings": {"score": 1.0, "issues": []}}}}
@@ -170,7 +170,7 @@ def test_fix_headings_no_issues_skips():
 def test_fix_readability_with_backend():
     """fix-readability uses LLM to rewrite paragraphs when backend provided."""
     from unittest.mock import Mock
-    from src.checker.skills.fix_readability import execute
+    from checker.skills.fix_readability import execute
 
     html = """<html><body>
     <p>This is a very long sentence that goes on and on and on and on for way too many words without any break in between whatsoever which makes it incredibly difficult to read and understand for the average reader on the web today.</p>
@@ -202,7 +202,7 @@ def test_fix_readability_with_backend():
 def test_fix_qa_with_backend():
     """fix-qa uses LLM to generate real Q&A when backend provided."""
     from unittest.mock import Mock
-    from src.checker.skills.fix_qa import execute
+    from checker.skills.fix_qa import execute
 
     html = """<html><body><h1>Our SaaS Product</h1>
     <p>We offer the best project management software. Plans start at $29/month.
@@ -237,7 +237,7 @@ def test_fix_qa_with_backend():
 def test_fix_llms_txt_with_backend():
     """fix-llms-txt uses LLM to generate llms.txt when backend provided."""
     from unittest.mock import Mock
-    from src.checker.skills.fix_llms_txt import execute
+    from checker.skills.fix_llms_txt import execute
 
     html = """<html><head><title>My Site</title></head>
     <body><h1>My Site</h1><h2>About</h2><p>We do cool things.</p>

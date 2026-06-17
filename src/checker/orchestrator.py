@@ -6,18 +6,18 @@ in order and handles the FetchResult | CrawlError union type at the
 crawler boundary.
 """
 
-from src.checker.access_fetcher import fetch_access_signals
-from src.checker.content_analyzer import analyze_content
-from src.checker.contracts import (
+from checker.access_fetcher import fetch_access_signals
+from checker.content_analyzer import analyze_content
+from checker.contracts import (
     ContentAnalysis,
     CrawlError,
     LlmsResult,
     RobotsResult,
     SchemaAnalysis,
 )
-from src.checker.crawler import fetch_url
-from src.checker.schema_analyzer import analyze_schema
-from src.checker.scorer import generate_report
+from checker.crawler import fetch_url
+from checker.schema_analyzer import analyze_schema
+from checker.scorer import generate_report
 
 
 def run_pipeline(url: str, timeout: float = 10.0, verbose: bool = False) -> dict:

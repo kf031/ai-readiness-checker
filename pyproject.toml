@@ -9,6 +9,25 @@ description = "Open-source tool that scores any website's AI search engine visib
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
+authors = [
+    {name = "AI Readiness Checker contributors"}
+]
+keywords = ["ai", "seo", "search", "llm", "claude", "chatgpt", "structured-data", "schema"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "requests>=2.32,<3.0",
     "beautifulsoup4>=4.14,<5.0",
@@ -22,6 +41,14 @@ dependencies = [
     "pandas>=2.0,<3.0",
     "mcp>=1.0,<2.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/ai-readiness-checker"
+Repository = "https://github.com/yourusername/ai-readiness-checker"
+Issues = "https://github.com/yourusername/ai-readiness-checker/issues"
+
+[project.scripts]
+checker = "checker.__main__:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0,<9.0"]

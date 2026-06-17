@@ -12,9 +12,9 @@ Endpoints:
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 
-from src.checker.orchestrator import run_pipeline
-from src.checker.contracts import CrawlError
-from src.checker.agent import build_agent_report, run_llm_agent
+from checker.orchestrator import run_pipeline
+from checker.contracts import CrawlError
+from checker.agent import build_agent_report, run_llm_agent
 
 app = FastAPI(
     title="AI Readiness Checker API",
@@ -87,7 +87,7 @@ async def fix_endpoint(request: FixRequest):
     backend = None
     if request.backend:
         try:
-            from src.checker.llm_backends import get_backend
+            from checker.llm_backends import get_backend
             backend = get_backend(request.backend)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Backend unavailable: {e}")

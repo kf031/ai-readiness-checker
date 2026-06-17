@@ -1,7 +1,7 @@
 """Tests for v2 skill discovery system and individual skill modules."""
 
 import pytest
-from src.checker.skills import list_skills, load_skill, execute_skill
+from checker.skills import list_skills, load_skill, execute_skill
 
 
 def test_list_skills_returns_all_registered():
@@ -28,7 +28,7 @@ def test_load_skill_returns_callable():
 # --- fix-schema ---
 
 def test_fix_schema_has_correct_name():
-    from src.checker.skills.fix_schema import SKILL_NAME
+    from checker.skills.fix_schema import SKILL_NAME
     assert SKILL_NAME == "fix-schema"
 
 
@@ -63,7 +63,7 @@ def test_fix_schema_no_missing_types():
 # --- fix-headings ---
 
 def test_fix_headings_has_correct_name():
-    from src.checker.skills.fix_headings import SKILL_NAME
+    from checker.skills.fix_headings import SKILL_NAME
     assert SKILL_NAME == "fix-headings"
 
 
@@ -92,7 +92,7 @@ def test_fix_headings_no_issues():
 # --- fix-readability ---
 
 def test_fix_readability_has_correct_name():
-    from src.checker.skills.fix_readability import SKILL_NAME
+    from checker.skills.fix_readability import SKILL_NAME
     assert SKILL_NAME == "fix-readability"
 
 
@@ -119,7 +119,7 @@ def test_fix_readability_passes_when_score_ok():
 # --- fix-qa ---
 
 def test_fix_qa_has_correct_name():
-    from src.checker.skills.fix_qa import SKILL_NAME
+    from checker.skills.fix_qa import SKILL_NAME
     assert SKILL_NAME == "fix-qa"
 
 
@@ -147,7 +147,7 @@ def test_fix_qa_passes_when_score_ok():
 # --- fix-llms-txt ---
 
 def test_fix_llms_txt_has_correct_name():
-    from src.checker.skills.fix_llms_txt import SKILL_NAME
+    from checker.skills.fix_llms_txt import SKILL_NAME
     assert SKILL_NAME == "fix-llms-txt"
 
 
@@ -166,7 +166,7 @@ def test_fix_llms_txt_generates_from_page_content():
 # --- render-preview ---
 
 def test_render_preview_has_correct_name():
-    from src.checker.skills.render_preview import SKILL_NAME
+    from checker.skills.render_preview import SKILL_NAME
     assert SKILL_NAME == "render-preview"
 
 
@@ -189,7 +189,7 @@ def test_render_preview_no_improved_html():
 # --- explain-changes ---
 
 def test_explain_changes_has_correct_name():
-    from src.checker.skills.explain_changes import SKILL_NAME
+    from checker.skills.explain_changes import SKILL_NAME
     assert SKILL_NAME == "explain-changes"
 
 

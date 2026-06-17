@@ -6,8 +6,8 @@ No conftest fixture dependency — all ScoreReport instances constructed inline.
 
 from rich.console import Console
 
-from src.checker.cli_renderer import display_score_card
-from src.checker.contracts import ScoreReport
+from checker.cli_renderer import display_score_card
+from checker.contracts import ScoreReport
 
 
 def _make_pipeline_result(report, errors=None, complete=True, stages_run=None):

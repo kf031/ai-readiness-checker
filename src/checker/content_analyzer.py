@@ -31,7 +31,7 @@ from datetime import datetime, timezone
 import textstat
 from bs4 import BeautifulSoup
 
-from src.checker.contracts import ContentAnalysis, FetchResult
+from checker.contracts import ContentAnalysis, FetchResult
 
 logger = logging.getLogger(__name__)
 

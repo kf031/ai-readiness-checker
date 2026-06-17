@@ -6,7 +6,7 @@ Supported backends:
     - anthropic: Anthropic API (claude-3-5-haiku, etc.)
 
 Usage:
-    from src.checker.llm_backends import get_backend, LLMBackend
+    from checker.llm_backends import get_backend, LLMBackend
     backend = get_backend("ollama", model="llama3.2:3b")
     result = backend.generate("Fix this HTML", system="You are an SEO expert.")
 """

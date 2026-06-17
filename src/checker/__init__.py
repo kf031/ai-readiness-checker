@@ -8,38 +8,38 @@ Phase 4: ContentAnalysis, analyze_content (content analysis)
 """
 
 # Phase 1 exports
-from src.checker.contracts import CrawlError, FetchResult
+from checker.contracts import CrawlError, FetchResult
 
 # Phase 2 exports — data contracts
-from src.checker.contracts import BotStatus, LlmsResult, RobotsResult
+from checker.contracts import BotStatus, LlmsResult, RobotsResult
 
 # Phase 2 exports — high-level API
-from src.checker.access_fetcher import fetch_access_signals
+from checker.access_fetcher import fetch_access_signals
 
 # Phase 3 exports — data contracts
-from src.checker.contracts import SchemaAnalysis
+from checker.contracts import SchemaAnalysis
 
 # Phase 4 exports — data contracts
-from src.checker.contracts import ContentAnalysis
+from checker.contracts import ContentAnalysis
 
 # Phase 3 exports — high-level API
-from src.checker.schema_analyzer import analyze_schema
+from checker.schema_analyzer import analyze_schema
 
 # Phase 4 exports — high-level API
-from src.checker.content_analyzer import analyze_content
+from checker.content_analyzer import analyze_content
 
 # Phase 5 exports — data contracts
-from src.checker.contracts import ScoreReport
+from checker.contracts import ScoreReport
 
 # Phase 5 exports — high-level API
-from src.checker.scorer import generate_report
+from checker.scorer import generate_report
 
 # Phase 6 exports — pipeline orchestrator
-from src.checker.orchestrator import run_pipeline
+from checker.orchestrator import run_pipeline
 
 # V2 exports — LLM Advisor Agent
-from src.checker.contracts import AgentOutput, SkillResult
-from src.checker.agent import run_llm_agent, decide_skills, build_agent_report
+from checker.contracts import AgentOutput, SkillResult
+from checker.agent import run_llm_agent, decide_skills, build_agent_report
 
 __all__ = [
     "AgentOutput",

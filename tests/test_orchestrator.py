@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.checker.contracts import (
+from checker.contracts import (
     ContentAnalysis,
     CrawlError,
     FetchResult,
@@ -13,7 +13,7 @@ from src.checker.contracts import (
     SchemaAnalysis,
     ScoreReport,
 )
-from src.checker.orchestrator import run_pipeline
+from checker.orchestrator import run_pipeline
 
 
 # ----- Test 1: Full success pipeline -----
@@ -21,11 +21,11 @@ from src.checker.orchestrator import run_pipeline
 def test_pipeline_full_success(sample_robots_result, sample_llms_result,
                                sample_schema_analysis, sample_content_analysis):
     """Verify run_pipeline() returns complete dict with all 5 stages on success."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = FetchResult(
             url="https://example.com", final_url="https://example.com",
@@ -63,11 +63,11 @@ def test_pipeline_full_success(sample_robots_result, sample_llms_result,
 def test_pipeline_crawl_error(sample_robots_result, sample_llms_result,
                                sample_crawl_error):
     """CrawlError skips schema/content but still runs access signals and scoring."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = sample_crawl_error
         mock_access.return_value = (sample_robots_result, sample_llms_result)
@@ -105,11 +105,11 @@ def test_pipeline_access_signals_failure(
     sample_schema_analysis, sample_content_analysis
 ):
     """Access signals failure produces zero-score fallback, pipeline continues."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = FetchResult(
             url="https://example.com", final_url="https://example.com",
@@ -144,11 +144,11 @@ def test_pipeline_schema_failure(
     sample_content_analysis,
 ):
     """Schema failure produces zero-score fallback, pipeline continues to content + score."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = FetchResult(
             url="https://example.com", final_url="https://example.com",
@@ -179,11 +179,11 @@ def test_pipeline_content_failure(
     sample_schema_analysis,
 ):
     """Content failure produces zero-score fallback, pipeline still runs score stage."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = FetchResult(
             url="https://example.com", final_url="https://example.com",
@@ -213,11 +213,11 @@ def test_pipeline_stages_run_order(
     sample_schema_analysis, sample_content_analysis,
 ):
     """Verify stages_run list preserves exact execution order."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = FetchResult(
             url="https://example.com", final_url="https://example.com",
@@ -241,7 +241,7 @@ def test_pipeline_stages_run_order(
 
 def test_pipeline_fallback_objects_compatible_with_generate_report():
     """Verify fallback objects with minimal fields don't cause AttributeError/KeyError in generate_report."""
-    from src.checker.scorer import generate_report
+    from checker.scorer import generate_report
 
     robots_result = RobotsResult(url="https://example.com", exists=False)
     llms_result = LlmsResult(url="https://example.com", found=False)
@@ -268,11 +268,11 @@ def test_pipeline_fallback_objects_compatible_with_generate_report():
 
 def test_pipeline_multi_module_failure():
     """Multiple module failures produce multiple error messages without crashing."""
-    with patch("src.checker.orchestrator.fetch_url") as mock_fetch, \
-         patch("src.checker.orchestrator.fetch_access_signals") as mock_access, \
-         patch("src.checker.orchestrator.analyze_schema") as mock_schema, \
-         patch("src.checker.orchestrator.analyze_content") as mock_content, \
-         patch("src.checker.orchestrator.generate_report") as mock_score:
+    with patch("checker.orchestrator.fetch_url") as mock_fetch, \
+         patch("checker.orchestrator.fetch_access_signals") as mock_access, \
+         patch("checker.orchestrator.analyze_schema") as mock_schema, \
+         patch("checker.orchestrator.analyze_content") as mock_content, \
+         patch("checker.orchestrator.generate_report") as mock_score:
 
         mock_fetch.return_value = FetchResult(
             url="https://example.com", final_url="https://example.com",

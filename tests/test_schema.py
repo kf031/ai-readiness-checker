@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 
-from src.checker.contracts import SchemaAnalysis, FetchResult
+from checker.contracts import SchemaAnalysis, FetchResult
 from tests.conftest import (
     SCHEMA_JSONLD_PRODUCT,
     SCHEMA_MICRODATA_FAQ,
@@ -23,7 +23,7 @@ from tests.conftest import (
 
 def test_extract_all_formats():
     """SCHEMA-01: All 4 formats extracted (json-ld, microdata, opengraph, rdfa)."""
-    from src.checker.schema_analyzer import extract_structured_data
+    from checker.schema_analyzer import extract_structured_data
 
     result = extract_structured_data(SCHEMA_MULTI_FORMAT)
     assert "json-ld" in result, "Missing json-ld key"
@@ -37,7 +37,7 @@ def test_extract_all_formats():
 
 def test_malformed_jsonld_handled():
     """SCHEMA-01: Malformed JSON-LD does not crash extraction (errors='log')."""
-    from src.checker.schema_analyzer import extract_structured_data
+    from checker.schema_analyzer import extract_structured_data
 
     result = extract_structured_data(SCHEMA_MALFORMED_JSONLD)
     assert "microdata" in result, "microdata key missing"
@@ -47,7 +47,7 @@ def test_malformed_jsonld_handled():
 
 def test_graph_pattern():
     """SCHEMA-01: JSON-LD @graph pattern is correctly traversed for nested types."""
-    from src.checker.schema_analyzer import extract_structured_data, collect_schema_types
+    from checker.schema_analyzer import extract_structured_data, collect_schema_types
 
     result = extract_structured_data(SCHEMA_GRAPH_MULTI_TYPE)
     types_found = collect_schema_types(result)
@@ -60,7 +60,7 @@ def test_graph_pattern():
 
 def test_detect_product_jsonld():
     """SCHEMA-02: Product type detected from JSON-LD."""
-    from src.checker.schema_analyzer import extract_structured_data, collect_schema_types
+    from checker.schema_analyzer import extract_structured_data, collect_schema_types
 
     result = extract_structured_data(SCHEMA_JSONLD_PRODUCT)
     types_found = collect_schema_types(result)
@@ -69,7 +69,7 @@ def test_detect_product_jsonld():
 
 def test_detect_faqpage_microdata():
     """SCHEMA-02: FAQPage type detected from microdata."""
-    from src.checker.schema_analyzer import extract_structured_data, collect_schema_types
+    from checker.schema_analyzer import extract_structured_data, collect_schema_types
 
     result = extract_structured_data(SCHEMA_MICRODATA_FAQ)
     types_found = collect_schema_types(result)
@@ -78,7 +78,7 @@ def test_detect_faqpage_microdata():
 
 def test_organization_or_localbusiness():
     """SCHEMA-02: Organization and LocalBusiness map to same category."""
-    from src.checker.schema_analyzer import TYPE_CATEGORY
+    from checker.schema_analyzer import TYPE_CATEGORY
 
     assert TYPE_CATEGORY.get("Organization") == TYPE_CATEGORY.get("LocalBusiness")
     assert TYPE_CATEGORY.get("Organization") == "Organization/LocalBusiness"
@@ -86,7 +86,7 @@ def test_organization_or_localbusiness():
 
 def test_article_or_blogposting():
     """SCHEMA-02: Article and BlogPosting map to same category."""
-    from src.checker.schema_analyzer import TYPE_CATEGORY
+    from checker.schema_analyzer import TYPE_CATEGORY
 
     assert TYPE_CATEGORY.get("Article") == TYPE_CATEGORY.get("BlogPosting")
     assert TYPE_CATEGORY.get("Article") == "Article/BlogPosting"
@@ -94,7 +94,7 @@ def test_article_or_blogposting():
 
 def test_review_or_aggregaterating():
     """SCHEMA-02: Review and AggregateRating map to same category (treated independently)."""
-    from src.checker.schema_analyzer import TYPE_CATEGORY
+    from checker.schema_analyzer import TYPE_CATEGORY
 
     assert TYPE_CATEGORY.get("Review") == TYPE_CATEGORY.get("AggregateRating")
     assert TYPE_CATEGORY.get("Review") == "Review/AggregateRating"
@@ -102,7 +102,7 @@ def test_review_or_aggregaterating():
 
 def test_detect_breadcrumblist_rdfa():
     """SCHEMA-02: BreadcrumbList type detected from RDFa."""
-    from src.checker.schema_analyzer import extract_structured_data, collect_schema_types
+    from checker.schema_analyzer import extract_structured_data, collect_schema_types
 
     result = extract_structured_data(SCHEMA_RDFA_BREADCRUMB)
     types_found = collect_schema_types(result)
@@ -111,7 +111,7 @@ def test_detect_breadcrumblist_rdfa():
 
 def test_no_types_found():
     """SCHEMA-02: Empty set returned when no schema types present."""
-    from src.checker.schema_analyzer import extract_structured_data, collect_schema_types
+    from checker.schema_analyzer import extract_structured_data, collect_schema_types
 
     result = extract_structured_data(SCHEMA_EMPTY_HTML)
     types_found = collect_schema_types(result)
@@ -120,7 +120,7 @@ def test_no_types_found():
 
 def test_empty_html():
     """SCHEMA-02: Empty HTML does not crash extraction."""
-    from src.checker.schema_analyzer import extract_structured_data
+    from checker.schema_analyzer import extract_structured_data
 
     result = extract_structured_data(SCHEMA_EMPTY_HTML)
     for key in ("json-ld", "microdata", "opengraph", "rdfa"):
@@ -130,7 +130,7 @@ def test_empty_html():
 
 def test_og_type_detection():
     """SCHEMA-02: OpenGraph og:type contributes to type detection."""
-    from src.checker.schema_analyzer import extract_structured_data, collect_schema_types
+    from checker.schema_analyzer import extract_structured_data, collect_schema_types
 
     result = extract_structured_data(SCHEMA_OG_PRODUCT)
     types_found = collect_schema_types(result)
@@ -142,7 +142,7 @@ def test_og_type_detection():
 
 def test_score_all_categories():
     """SCHEMA-03: Score = 0.805 when all 6 categories present (one type each)."""
-    from src.checker.schema_analyzer import compute_schema_score
+    from checker.schema_analyzer import compute_schema_score
 
     score = compute_schema_score(
         {"Product", "FAQPage", "Organization", "BreadcrumbList", "Article", "AggregateRating"}
@@ -153,14 +153,14 @@ def test_score_all_categories():
 
 def test_score_zero():
     """SCHEMA-03: Score = 0.0 when no types present."""
-    from src.checker.schema_analyzer import compute_schema_score
+    from checker.schema_analyzer import compute_schema_score
 
     assert compute_schema_score(set()) == 0.0
 
 
 def test_score_product_faqpage_weights():
     """SCHEMA-03: Product and FAQPage each contribute 0.25 (highest weights)."""
-    from src.checker.schema_analyzer import compute_schema_score
+    from checker.schema_analyzer import compute_schema_score
 
     assert compute_schema_score({"Product"}) == 0.25
     assert compute_schema_score({"FAQPage"}) == 0.25
@@ -168,7 +168,7 @@ def test_score_product_faqpage_weights():
 
 def test_score_partial():
     """SCHEMA-03: Partial type presence produces proportionate score."""
-    from src.checker.schema_analyzer import compute_schema_score
+    from checker.schema_analyzer import compute_schema_score
 
     # FAQPage (0.25) + BreadcrumbList (0.10) = 0.35
     assert compute_schema_score({"FAQPage", "BreadcrumbList"}) == 0.35
@@ -179,56 +179,56 @@ def test_score_partial():
 
 def test_normalize_type_none():
     """normalize_type_name(None) returns None."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name(None) is None
 
 
 def test_normalize_type_empty_string():
     """normalize_type_name('') returns None."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("") is None
 
 
 def test_normalize_type_whitespace():
     """normalize_type_name('   ') returns None (whitespace-only strips to empty)."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("   ") is None
 
 
 def test_normalize_type_uri():
     """normalize_type_name('http://schema.org/Product') returns 'Product'."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("http://schema.org/Product") == "Product"
 
 
 def test_normalize_type_lowercase_og():
     """normalize_type_name('product') returns 'Product' (lowercase OG via .title())."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("product") == "Product"
 
 
 def test_normalize_type_pascalcase():
     """normalize_type_name('FAQPage') returns 'FAQPage' (PascalCase pass-through)."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("FAQPage") == "FAQPage"
 
 
 def test_normalize_type_pascalcase_multiword():
     """normalize_type_name('BreadcrumbList') returns 'BreadcrumbList' (multi-word pass-through)."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("BreadcrumbList") == "BreadcrumbList"
 
 
 def test_normalize_type_uri_localbusiness():
     """normalize_type_name('http://schema.org/LocalBusiness') returns 'LocalBusiness'."""
-    from src.checker.schema_analyzer import normalize_type_name
+    from checker.schema_analyzer import normalize_type_name
 
     assert normalize_type_name("http://schema.org/LocalBusiness") == "LocalBusiness"
 
@@ -238,7 +238,7 @@ def test_normalize_type_uri_localbusiness():
 
 def test_weights_sum_to_one():
     """TARGET_TYPES weights sum exactly to 1.0."""
-    from src.checker.schema_analyzer import TARGET_TYPES
+    from checker.schema_analyzer import TARGET_TYPES
 
     total = sum(TARGET_TYPES.values())
     assert abs(total - 1.0) < 0.001, f"TARGET_TYPES sum = {total}, should be 1.0"
@@ -246,7 +246,7 @@ def test_weights_sum_to_one():
 
 def test_type_category_covers_targets():
     """TYPE_CATEGORY has entries for all TARGET_TYPES keys."""
-    from src.checker.schema_analyzer import TARGET_TYPES, TYPE_CATEGORY
+    from checker.schema_analyzer import TARGET_TYPES, TYPE_CATEGORY
 
     assert set(TARGET_TYPES.keys()) == set(TYPE_CATEGORY.keys()), (
         f"Mismatch: TARGET_TYPES keys {set(TARGET_TYPES.keys())}, "
@@ -259,7 +259,7 @@ def test_type_category_covers_targets():
 
 def test_analyze_schema_multi_format():
     """analyze_schema returns SchemaAnalysis with correct detected_types."""
-    from src.checker.schema_analyzer import analyze_schema
+    from checker.schema_analyzer import analyze_schema
 
     fetch_result = FetchResult(
         url="https://example.com",
@@ -281,7 +281,7 @@ def test_analyze_schema_multi_format():
 def test_extruct_catastrophic_failure():
     """extruct.extract raising Exception returns empty dict keys, no crash."""
     from unittest.mock import patch
-    from src.checker.schema_analyzer import extract_structured_data
+    from checker.schema_analyzer import extract_structured_data
     import extruct
 
     with patch.object(extruct, 'extract', side_effect=RuntimeError("crash")):
@@ -294,7 +294,7 @@ def test_extruct_catastrophic_failure():
 
 def test_compute_schema_score_custom_weights():
     """compute_schema_score with custom weights dict uses provided weights."""
-    from src.checker.schema_analyzer import compute_schema_score
+    from checker.schema_analyzer import compute_schema_score
 
     custom = {"Product": 0.5, "FAQPage": 0.5}
     assert compute_schema_score({"Product"}, weights=custom) == 0.5
@@ -305,7 +305,7 @@ def test_compute_schema_score_custom_weights():
 
 def test_analyze_schema_empty_html():
     """analyze_schema on empty HTML returns all-empty SchemaAnalysis with score 0.0."""
-    from src.checker.schema_analyzer import analyze_schema
+    from checker.schema_analyzer import analyze_schema
 
     fetch_result = FetchResult(
         url="https://example.com",

@@ -2,12 +2,18 @@
 
 Run: streamlit run app.py
 """
+import sys
+from pathlib import Path
+_src = Path(__file__).parent / "src"
+if str(_src) not in sys.path:
+    sys.path.insert(0, str(_src))
+
 import streamlit as st
 
-from src.checker.agent import build_agent_report, run_llm_agent
-from src.checker.cli_renderer import GRADE_COLORS, MODULE_ORDER, MODULE_DISPLAY_NAMES
-from src.checker.contracts import CrawlError
-from src.checker.orchestrator import run_pipeline
+from checker.agent import build_agent_report, run_llm_agent
+from checker.cli_renderer import GRADE_COLORS, MODULE_ORDER, MODULE_DISPLAY_NAMES
+from checker.contracts import CrawlError
+from checker.orchestrator import run_pipeline
 
 st.set_page_config(
     page_title="AI Readiness Checker",

@@ -10,7 +10,7 @@ from urllib.parse import urlsplit
 from ipaddress import ip_address
 from bs4 import BeautifulSoup
 
-from src.checker.contracts import FetchResult, CrawlError
+from checker.contracts import FetchResult, CrawlError
 
 
 # ---- Constants ----

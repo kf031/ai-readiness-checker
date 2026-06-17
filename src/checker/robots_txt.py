@@ -10,7 +10,7 @@ from urllib.robotparser import RobotFileParser
 
 import httpx
 
-from src.checker.contracts import RobotsResult, BotStatus
+from checker.contracts import RobotsResult, BotStatus
 
 
 # ---- Constants ----

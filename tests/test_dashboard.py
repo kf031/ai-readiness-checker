@@ -17,7 +17,7 @@ from streamlit.testing.v1 import AppTest
 
 def test_analyze_triggers_pipeline(mock_pipeline_result):
     """DASH-01: Clicking Analyze with a URL triggers run_pipeline and renders results."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -39,7 +39,7 @@ def test_analyze_triggers_pipeline(mock_pipeline_result):
 
 def test_analyze_empty_url_shows_warning():
     """DASH-01: Clicking Analyze with empty URL shows warning, does not trigger pipeline."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         at = AppTest.from_file("app.py").run()
         assert not at.exception
 
@@ -68,7 +68,7 @@ def test_analyze_empty_url_shows_warning():
 
 def test_spinner_shows_during_analysis(mock_pipeline_result):
     """DASH-02: Loading spinner text is present after Analyze click (cache_data show_spinner)."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -89,7 +89,7 @@ def test_spinner_shows_during_analysis(mock_pipeline_result):
 
 def test_score_hero_rendered(mock_pipeline_result):
     """DASH-03: Overall score metric and grade badge are rendered after analysis."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -114,7 +114,7 @@ def test_score_hero_rendered(mock_pipeline_result):
 
 def test_grade_badge_color(mock_pipeline_result):
     """DASH-03: Grade badge uses correct color for each grade (A=green, B=blue, etc.)."""
-    from src.checker.contracts import ScoreReport
+    from checker.contracts import ScoreReport
 
     # Test each grade produces its hex color in the rendered HTML.
     # Each iteration uses a unique URL to avoid st.cache_data
@@ -148,7 +148,7 @@ def test_grade_badge_color(mock_pipeline_result):
             "content_analysis": mock_pipeline_result["content_analysis"],
         }
 
-        with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+        with patch("checker.orchestrator.run_pipeline") as mock_run:
             mock_run.return_value = result
             at = AppTest.from_file("app.py").run()
             at.session_state["analysis_done"] = True
@@ -170,7 +170,7 @@ def test_grade_badge_color(mock_pipeline_result):
 
 def test_module_expanders_rendered(mock_pipeline_result):
     """DASH-04: Four module expanders with progress bars are rendered."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -197,7 +197,7 @@ def test_module_expanders_rendered(mock_pipeline_result):
 
 def test_module_expanders_contain_progress_bars(mock_pipeline_result):
     """DASH-04: Each expander contains a st.progress bar when expanded."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -219,7 +219,7 @@ def test_module_expanders_contain_progress_bars(mock_pipeline_result):
 
 def test_recommendations_rendered(mock_pipeline_result):
     """DASH-05: Recommendations are rendered with priority badges."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -244,7 +244,7 @@ def test_recommendations_empty_not_rendered(mock_pipeline_result):
     """DASH-05: When recommendations list is empty, no Recommendations section is shown."""
     empty_result = dict(mock_pipeline_result)
     # Replace report with one that has no recommendations
-    from src.checker.contracts import ScoreReport
+    from checker.contracts import ScoreReport
     empty_result["report"] = ScoreReport(
         url="https://example.com/empty-recs",
         overall_score=100.0,
@@ -258,7 +258,7 @@ def test_recommendations_empty_not_rendered(mock_pipeline_result):
         recommendations=[],
     )
 
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = empty_result
         # Use a unique URL to avoid cache_data hit from previous tests
         # (st.cache_data is shared across AppTest.from_file calls in same process)
@@ -283,7 +283,7 @@ def test_recommendations_empty_not_rendered(mock_pipeline_result):
 
 def test_cache_prevents_rerun(mock_pipeline_result):
     """DASH-06: Subsequent reruns return cached result, pipeline is NOT called again."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         # First run: full flow (use unique URL to avoid cache contamination)
@@ -313,7 +313,7 @@ def test_cache_prevents_rerun(mock_pipeline_result):
 
 def test_cache_new_url_triggers_rerun(mock_pipeline_result):
     """DASH-06: Entering a new URL and clicking Analyze triggers a fresh pipeline run."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result
 
         at = AppTest.from_file("app.py").run()
@@ -344,7 +344,7 @@ def test_errors_displayed(mock_pipeline_result):
         "Schema analysis failed: ValueError('extruct failed')",
     ]
 
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = error_result
         # Use a unique URL to avoid cache_data hit from previous tests
         at = AppTest.from_file("app.py").run()
@@ -368,7 +368,7 @@ def test_errors_displayed(mock_pipeline_result):
 
 def test_errors_empty_not_rendered(mock_pipeline_result):
     """When errors list is empty, no error section is rendered."""
-    with patch("src.checker.orchestrator.run_pipeline") as mock_run:
+    with patch("checker.orchestrator.run_pipeline") as mock_run:
         mock_run.return_value = mock_pipeline_result  # errors=[]
 
         at = AppTest.from_file("app.py").run()

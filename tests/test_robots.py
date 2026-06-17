@@ -4,8 +4,8 @@ import pytest
 from unittest.mock import patch, Mock
 import httpx
 
-from src.checker.robots_txt import analyze_robots, compute_bot_score, fetch_robots_txt, BOT_TOKENS, MAX_ROBOTS_SIZE
-from src.checker.contracts import RobotsResult, BotStatus
+from checker.robots_txt import analyze_robots, compute_bot_score, fetch_robots_txt, BOT_TOKENS, MAX_ROBOTS_SIZE
+from checker.contracts import RobotsResult, BotStatus
 from tests.conftest import (
     ROBOTS_TXT_ALL_ALLOWED,
     ROBOTS_TXT_ALL_BLOCKED,

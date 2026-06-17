@@ -9,8 +9,8 @@ corresponding fix skills, and assembles the final output.
 
 import re
 
-from src.checker.contracts import AgentOutput
-from src.checker.skills import execute_skill
+from checker.contracts import AgentOutput
+from checker.skills import execute_skill
 
 
 def build_agent_report(pipeline_result: dict) -> dict:
@@ -36,7 +36,7 @@ def build_agent_report(pipeline_result: dict) -> dict:
     content = pipeline_result.get("content_analysis")
 
     # Determine missing schema types
-    from src.checker.schema_analyzer import TARGET_TYPES
+    from checker.schema_analyzer import TARGET_TYPES
     types_found = list(schema.detected_types) if schema else []
     types_missing = [t for t in TARGET_TYPES if t not in (types_found or [])]
 
@@ -51,14 +51,14 @@ def build_agent_report(pipeline_result: dict) -> dict:
 
     # Compute robots score (RobotsResult has no .score attribute directly)
     if robots is not None and hasattr(robots, 'bots'):
-        from src.checker.robots_txt import compute_bot_score
+        from checker.robots_txt import compute_bot_score
         robots_score = compute_bot_score(robots.bots)
     else:
         robots_score = 0.0
 
     # Compute llms score (compute_llms_score takes found + valid, not LlmsResult)
     if llms is not None and hasattr(llms, 'found'):
-        from src.checker.llms_txt import compute_llms_score
+        from checker.llms_txt import compute_llms_score
         llms_score = compute_llms_score(llms.found, llms.valid)
     else:
         llms_score = 0.0

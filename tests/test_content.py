@@ -3,7 +3,7 @@
 import pytest
 from bs4 import BeautifulSoup
 
-from src.checker.content_analyzer import (
+from checker.content_analyzer import (
     _extract_plain_text,
     _is_question,
     extract_entities,
@@ -15,7 +15,7 @@ from src.checker.content_analyzer import (
     compute_combined_score,
     MAX_TEXT_LENGTH,
 )
-from src.checker.contracts import ContentAnalysis
+from checker.contracts import ContentAnalysis
 from tests.conftest import (
     CONTENT_HTML_MULTI_ENTITY,
     CONTENT_HTML_TEXT_HEAVY,
@@ -138,7 +138,7 @@ def test_empty_page():
 def test_heading_structure():
     """CONT-04: Heading structure analysis (H1 uniqueness, hierarchy, descriptiveness)."""
     from tests.conftest import CONTENT_HTML_TEXT_HEAVY, CONTENT_HTML_NO_HEADINGS
-    from src.checker.content_analyzer import analyze_headings, score_headings
+    from checker.content_analyzer import analyze_headings, score_headings
 
     # Text-heavy page with proper heading hierarchy
     soup = BeautifulSoup(CONTENT_HTML_TEXT_HEAVY, "lxml")
@@ -166,7 +166,7 @@ def test_heading_structure():
 def test_heading_structure_no_headings():
     """CONT-04: Page with no headings returns score 0.0."""
     from tests.conftest import CONTENT_HTML_NO_HEADINGS
-    from src.checker.content_analyzer import analyze_headings, score_headings
+    from checker.content_analyzer import analyze_headings, score_headings
 
     soup = BeautifulSoup(CONTENT_HTML_NO_HEADINGS, "lxml")
     analysis = analyze_headings(soup)
@@ -211,7 +211,7 @@ CONTENT_HTML_H3_NO_H2 = """<!DOCTYPE html>
 
 def test_heading_duplicate_h1():
     """Two H1 elements -> h1_unique is False, heading_score < 0.5."""
-    from src.checker.content_analyzer import analyze_headings, score_headings
+    from checker.content_analyzer import analyze_headings, score_headings
 
     soup = BeautifulSoup(CONTENT_HTML_DUPLICATE_H1, "lxml")
     analysis = analyze_headings(soup)
@@ -228,7 +228,7 @@ def test_heading_duplicate_h1():
 
 def test_heading_h3_without_h2():
     """H3 elements without H2 -> hierarchy_violations == 2, heading_score < 0.7."""
-    from src.checker.content_analyzer import analyze_headings, score_headings
+    from checker.content_analyzer import analyze_headings, score_headings
 
     soup = BeautifulSoup(CONTENT_HTML_H3_NO_H2, "lxml")
     analysis = analyze_headings(soup)
@@ -246,8 +246,8 @@ def test_heading_h3_without_h2():
 def test_analyze_content_no_headings():
     """analyze_content on no-headings fixture -> heading_score == 0.0, total_headings == 0."""
     from tests.conftest import CONTENT_HTML_NO_HEADINGS
-    from src.checker.contracts import FetchResult
-    from src.checker.content_analyzer import analyze_content
+    from checker.contracts import FetchResult
+    from checker.content_analyzer import analyze_content
 
     soup = BeautifulSoup(CONTENT_HTML_NO_HEADINGS, "lxml")
     fetch_result = FetchResult(
@@ -272,7 +272,7 @@ def test_analyze_content_no_headings():
 def test_qa_density():
     """CONT-05: Q&A density scoring."""
     from tests.conftest import CONTENT_HTML_FAQ
-    from src.checker.content_analyzer import _extract_plain_text, analyze_qa_density, score_qa_density
+    from checker.content_analyzer import _extract_plain_text, analyze_qa_density, score_qa_density
 
     soup = BeautifulSoup(CONTENT_HTML_FAQ, "lxml")
     text = _extract_plain_text(soup)
@@ -296,7 +296,7 @@ def test_qa_density():
 
 def test_qa_density_empty_text():
     """CONT-05: Empty text returns zero QA density."""
-    from src.checker.content_analyzer import analyze_qa_density, score_qa_density
+    from checker.content_analyzer import analyze_qa_density, score_qa_density
 
     analysis = analyze_qa_density("")
     assert analysis["question_count"] == 0
@@ -309,8 +309,8 @@ def test_qa_density_empty_text():
 def test_combined_score():
     """CONT-06: Combined score 0.0-1.0 from all sub-signals."""
     from tests.conftest import CONTENT_HTML_TEXT_HEAVY
-    from src.checker.contracts import FetchResult
-    from src.checker.content_analyzer import analyze_content
+    from checker.contracts import FetchResult
+    from checker.content_analyzer import analyze_content
 
     soup = BeautifulSoup(CONTENT_HTML_TEXT_HEAVY, "lxml")
     # Build a minimal FetchResult for the text-heavy fixture
@@ -360,8 +360,8 @@ def test_combined_score():
 def test_empty_page_integration():
     """Edge case: Empty page via analyze_content returns all zeros, no crash."""
     from tests.conftest import SCHEMA_EMPTY_HTML
-    from src.checker.contracts import FetchResult
-    from src.checker.content_analyzer import analyze_content
+    from checker.contracts import FetchResult
+    from checker.content_analyzer import analyze_content
 
     soup = BeautifulSoup(SCHEMA_EMPTY_HTML, "lxml")
     fetch_result = FetchResult(
@@ -390,8 +390,8 @@ def test_spacy_model_missing():
     """Edge case: When spaCy model not installed, analyze_content returns gracefully."""
     from unittest import mock
     from tests.conftest import CONTENT_HTML_TEXT_HEAVY
-    from src.checker.contracts import FetchResult
-    from src.checker import content_analyzer
+    from checker.contracts import FetchResult
+    from checker import content_analyzer
 
     soup = BeautifulSoup(CONTENT_HTML_TEXT_HEAVY, "lxml")
     fetch_result = FetchResult(

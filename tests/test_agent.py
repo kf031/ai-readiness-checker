@@ -1,8 +1,8 @@
 """Tests for v2 agent module — skill selection, merge, and orchestration."""
 
 import pytest
-from src.checker.agent import decide_skills, merge_results, run_llm_agent, build_agent_report
-from src.checker.contracts import AgentOutput
+from checker.agent import decide_skills, merge_results, run_llm_agent, build_agent_report
+from checker.contracts import AgentOutput
 
 
 REPORT_DICT_FIXTURE = {
@@ -118,7 +118,7 @@ def test_run_llm_agent_no_failing_modules():
 
 def test_build_agent_report_from_pipeline_result():
     """build_agent_report constructs the right dict shape from pipeline output."""
-    from src.checker.contracts import (
+    from checker.contracts import (
         ScoreReport, RobotsResult, LlmsResult, SchemaAnalysis, ContentAnalysis, CrawlError
     )
 

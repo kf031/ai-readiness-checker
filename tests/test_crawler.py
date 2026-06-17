@@ -5,8 +5,8 @@ from unittest.mock import patch, Mock
 import requests
 
 # Import the module under test
-from src.checker.crawler import fetch_url, MAX_RESPONSE_SIZE, BLOCKED_HOSTS, BLOCKED_NETWORKS, is_ssrf_safe
-from src.checker.contracts import FetchResult, CrawlError
+from checker.crawler import fetch_url, MAX_RESPONSE_SIZE, BLOCKED_HOSTS, BLOCKED_NETWORKS, is_ssrf_safe
+from checker.contracts import FetchResult, CrawlError
 
 
 # ----- CRAWL-01: Successful fetch -----

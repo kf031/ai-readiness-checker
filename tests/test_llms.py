@@ -4,8 +4,8 @@ import pytest
 from unittest.mock import Mock, patch
 import httpx
 
-from src.checker.llms_txt import validate_llms_txt, fetch_llms_txt, compute_llms_score
-from src.checker.contracts import LlmsResult
+from checker.llms_txt import validate_llms_txt, fetch_llms_txt, compute_llms_score
+from checker.contracts import LlmsResult
 from tests.conftest import (
     LLMS_TXT_VALID,
     LLMS_TXT_NO_H1,

@@ -12,7 +12,7 @@ from typing import Optional
 import httpx
 from markdown_it import MarkdownIt
 
-from src.checker.contracts import LlmsResult
+from checker.contracts import LlmsResult
 
 
 # ---- Constants ----

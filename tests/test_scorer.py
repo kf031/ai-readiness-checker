@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from src.checker.contracts import (
+from checker.contracts import (
     BotStatus,
     ContentAnalysis,
     LlmsResult,
@@ -14,7 +14,7 @@ from src.checker.contracts import (
     SchemaAnalysis,
     ScoreReport,
 )
-from src.checker.scorer import compute_overall_score, generate_report, letter_grade
+from checker.scorer import compute_overall_score, generate_report, letter_grade
 
 
 # ----- SCORE-01: Weighted overall score computation -----
@@ -227,7 +227,7 @@ def test_all_blocked_score():
 def test_recommendation_blocked_gptbot():
     """SCORE-03: RobotsResult with blocked GPTBot generates specific
     MEDIUM recommendation."""
-    from src.checker.scorer import _robot_recommendations
+    from checker.scorer import _robot_recommendations
 
     result = RobotsResult(
         url="https://example.com",
@@ -245,7 +245,7 @@ def test_recommendation_blocked_gptbot():
 def test_recommendation_missing_robots():
     """SCORE-03: RobotsResult with exists=False generates HIGH
     recommendation about missing robots.txt."""
-    from src.checker.scorer import _robot_recommendations
+    from checker.scorer import _robot_recommendations
 
     result = RobotsResult(url="https://example.com", exists=False)
     recs = _robot_recommendations(result)
@@ -258,7 +258,7 @@ def test_recommendation_missing_robots():
 def test_recommendation_missing_llms():
     """SCORE-03: LlmsResult with found=False generates HIGH
     recommendation about missing llms.txt."""
-    from src.checker.scorer import _llms_recommendations
+    from checker.scorer import _llms_recommendations
 
     result = LlmsResult(url="https://example.com", found=False)
     recs = _llms_recommendations(result)
@@ -271,7 +271,7 @@ def test_recommendation_missing_llms():
 def test_recommendation_missing_schema_types():
     """SCORE-03: SchemaAnalysis with low score and missing Product,
     FAQPage types generates MEDIUM recommendations for both."""
-    from src.checker.scorer import _schema_recommendations
+    from checker.scorer import _schema_recommendations
 
     analysis = SchemaAnalysis(
         url="https://example.com",
@@ -291,7 +291,7 @@ def test_recommendation_missing_schema_types():
 def test_recommendation_low_content_subscores():
     """SCORE-03: ContentAnalysis with low readability and heading
     subscores generates targeted MEDIUM recommendations."""
-    from src.checker.scorer import _content_recommendations
+    from checker.scorer import _content_recommendations
 
     analysis = ContentAnalysis(
         url="https://example.com",
@@ -315,7 +315,7 @@ def test_recommendation_low_content_subscores():
 def test_recommendation_priority_sorting():
     """SCORE-03: generate_recommendations sorts by priority: all HIGH
     before all MEDIUM before all LOW."""
-    from src.checker.scorer import generate_recommendations
+    from checker.scorer import generate_recommendations
 
     robots_result = RobotsResult(
         url="https://example.com",
@@ -349,7 +349,7 @@ def test_recommendation_priority_sorting():
 def test_no_recommendations_for_perfect_module():
     """SCORE-03: schema score >= 0.7 returns empty list; content
     combined_score >= 0.6 returns empty list."""
-    from src.checker.scorer import _content_recommendations, _schema_recommendations
+    from checker.scorer import _content_recommendations, _schema_recommendations
 
     good_schema = SchemaAnalysis(
         url="https://example.com",

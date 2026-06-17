@@ -15,9 +15,9 @@ from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 import mcp.types as types
 
-from src.checker.orchestrator import run_pipeline
-from src.checker.contracts import CrawlError
-from src.checker.agent import build_agent_report, run_llm_agent
+from checker.orchestrator import run_pipeline
+from checker.contracts import CrawlError
+from checker.agent import build_agent_report, run_llm_agent
 
 server = Server("checker")
 

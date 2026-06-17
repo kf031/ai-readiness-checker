@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import patch, Mock
 from fastapi.testclient import TestClient
 
-from src.checker.api_server import app
+from checker.api_server import app
 
 client = TestClient(app)
 
@@ -16,7 +16,7 @@ def test_health_endpoint():
 
 
 def test_analyze_get_endpoint():
-    with patch("src.checker.api_server.run_pipeline") as mock_run:
+    with patch("checker.api_server.run_pipeline") as mock_run:
         mock_report = Mock()
         mock_report.url = "https://example.com"
         mock_report.overall_score = 62.5
@@ -41,7 +41,7 @@ def test_analyze_get_endpoint():
 
 
 def test_analyze_post_endpoint():
-    with patch("src.checker.api_server.run_pipeline") as mock_run:
+    with patch("checker.api_server.run_pipeline") as mock_run:
         mock_report = Mock()
         mock_report.url = "https://test.com"
         mock_report.overall_score = 85.0
@@ -68,11 +68,11 @@ def test_analyze_missing_url():
 
 
 def test_fix_endpoint():
-    from src.checker.contracts import FetchResult
+    from checker.contracts import FetchResult
     from bs4 import BeautifulSoup
 
-    with patch("src.checker.api_server.run_pipeline") as mock_run, \
-         patch("src.checker.api_server.run_llm_agent") as mock_agent:
+    with patch("checker.api_server.run_pipeline") as mock_run, \
+         patch("checker.api_server.run_llm_agent") as mock_agent:
         html = "<html><head></head><body><h1>Test</h1></body></html>"
         fetch_result = Mock(spec=FetchResult)
         fetch_result.html = html
@@ -103,9 +103,9 @@ def test_fix_endpoint():
 
 
 def test_fix_endpoint_fetch_failed():
-    from src.checker.contracts import CrawlError
+    from checker.contracts import CrawlError
 
-    with patch("src.checker.api_server.run_pipeline") as mock_run:
+    with patch("checker.api_server.run_pipeline") as mock_run:
         mock_run.return_value = {
             "fetch_result": CrawlError(url="https://example.com", error_type="connection_error", message="failed"),
             "report": None,
