@@ -17,7 +17,11 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
 
-from .cli_renderer import display_score_card
+from .cli_renderer import (
+    SCOUTER_STAGE_LABELS,
+    display_score_card,
+    display_scouter_card,
+)
 from .contracts import CrawlError
 from .orchestrator import run_pipeline
 
@@ -34,22 +38,25 @@ STAGE_LABELS = {
 }
 
 
-def _build_progress_panel(stage_states: dict) -> Group:
+def _build_progress_panel(stage_states: dict, theme: str = "default") -> Group:
     """Build a Rich renderable showing current pipeline progress."""
+    labels = SCOUTER_STAGE_LABELS if theme == "dbz" else STAGE_LABELS
+    is_dbz = theme == "dbz"
+
     lines: list[Text] = []
     for key in STAGE_ORDER:
-        label = STAGE_LABELS.get(key, key)
+        label = labels.get(key, key)
         state = stage_states.get(key, "pending")
         detail = stage_states.get(f"{key}_detail", "")
 
         if state == "pending":
-            prefix, style = "  ○ ", "dim"
+            prefix, style = ("  ○ ", "dim green") if is_dbz else ("  ○ ", "dim")
             suffix = ""
         elif state == "running":
-            prefix, style = "  ◉ ", "bold cyan"
+            prefix, style = ("  ◉ ", "bold green") if is_dbz else ("  ◉ ", "bold cyan")
             suffix = ""
-        else:  # done
-            prefix, style = "  ✓ ", "bold green"
+        else:
+            prefix, style = ("  ✓ ", "bold green") if is_dbz else ("  ✓ ", "bold green")
             suffix = f" — {detail}" if detail else ""
 
         lines.append(Text(f"{prefix}{label}{suffix}", style=style))
@@ -57,12 +64,8 @@ def _build_progress_panel(stage_states: dict) -> Group:
     return Group(*lines)
 
 
-def _run_pipeline_with_progress(url: str, timeout: float, verbose: bool) -> dict:
-    """Run the pipeline with an animated progress display.
-
-    In verbose mode, stage names are printed as text.
-    In normal mode, a Rich Live display shows animated stage progress.
-    """
+def _run_pipeline_with_progress(url: str, timeout: float, verbose: bool, theme: str = "default") -> dict:
+    """Run the pipeline with an animated progress display."""
     if verbose:
         return run_pipeline(url, timeout=timeout, verbose=True)
 
@@ -74,7 +77,7 @@ def _run_pipeline_with_progress(url: str, timeout: float, verbose: bool) -> dict
             stages[f"{key}_detail"] = detail
 
     with Live(
-        _build_progress_panel(stages),
+        _build_progress_panel(stages, theme=theme),
         console=None,
         refresh_per_second=8,
         transient=True,
@@ -153,6 +156,11 @@ def main(argv: list[str] | None = None) -> int:
         default=8000,
         help="Port for --serve or --mcp (default: 8000)",
     )
+    parser.add_argument(
+        "--dbz",
+        action="store_true",
+        help="Dragon Ball Z scouter theme — power levels and warrior classes",
+    )
     args = parser.parse_args(argv)
 
     # --serve mode: launch FastAPI server
@@ -178,10 +186,14 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("url is required (or use --batch or --mcp)")
 
     # Run the full analysis pipeline (with animated progress in non-verbose mode)
-    result = _run_pipeline_with_progress(args.url, timeout=args.timeout, verbose=args.verbose)
+    theme = "dbz" if args.dbz else "default"
+    result = _run_pipeline_with_progress(args.url, timeout=args.timeout, verbose=args.verbose, theme=theme)
 
     # Display the formatted score card
-    display_score_card(result)
+    if args.dbz:
+        display_scouter_card(result)
+    else:
+        display_score_card(result)
 
     # --fix mode: invoke the v2 agent after scoring
     if args.fix:
