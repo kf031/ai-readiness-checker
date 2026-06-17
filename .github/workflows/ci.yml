@@ -29,7 +29,14 @@ jobs:
         run: python -m spacy download en_core_web_sm
 
       - name: Run tests
-        run: python -m pytest tests/ -v --tb=long -p no:warnings --reruns 2
+        run: python -m pytest tests/ -v --tb=long -p no:warnings --junitxml=junit.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: junit.xml
 
   test-no-nlp:
     runs-on: ubuntu-latest
@@ -43,7 +50,14 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Run tests (no NLP)
-        run: python -m pytest tests/ -v --tb=long -p no:warnings --reruns 2
+        run: python -m pytest tests/ -v --tb=long -p no:warnings --junitxml=junit.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-no-nlp
+          path: junit.xml
 
   lint:
     runs-on: ubuntu-latest
