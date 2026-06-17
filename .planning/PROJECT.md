@@ -38,13 +38,16 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 
 ### Active
 
-- [ ] CLI entry point: `python -m checker <url>` with rich-formatted score card
-- [ ] Streamlit dashboard: URL input → spinner → overall score gauge → grade badge → per-module expandable sections → recommendations list
+- [x] CLI entry point: `python -m checker <url>` with rich-formatted score card (Phase 6)
+- [x] Streamlit dashboard: URL input → spinner → overall score gauge → grade badge → per-module expandable sections → recommendations list (Phase 7)
+- [x] LLM Advisor Agent: 7 fix skills (schema, headings, readability, QA, llms.txt, preview, explain) with `--fix` CLI flag and "Improve My Site" button in Streamlit (v2)
+- [x] MCP Server: `checker_analyze` and `checker_fix` tools for MCP-compatible LLMs via `--mcp` flag (v2)
+- [ ] Standalone LLM backends: Ollama (Llama 3.2 3B), Anthropic API, OpenAI API — abstracted behind LLMBackend interface (v3)
+- [ ] JSON export: `--output report.json` flag for machine-readable output (v3)
+- [ ] Batch CSV analysis: `python -m checker --batch urls.csv` (v3)
 
 ### Out of Scope
 
-- Batch URL / CSV upload — future v3 feature
-- FastAPI wrapper / hosted API — future v3
 - Browser extension — future v3
 - Weekly monitoring / email alerts — future v3
 - Dataset publishing on HuggingFace — future v3
@@ -74,7 +77,7 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 | extruct for structured data extraction | Handles JSON-LD, microdata, and RDFa in one pass | — Pending |
 | Streamlit for demo UI | Easiest Python-native way to ship a shareable web demo with no backend work | — Pending |
 | Weighted scoring (content 35%, schema 30%) | Content quality and structured data are highest signal for AI citability | — Pending |
-| LLM Agent in v2, distribution in v3 | Lead with standout feature (AI-generated fixes + visual preview) before building infrastructure. Claude Code skills as first backend avoids LLM SDK deps in v2. | — Pending |
+| LLM Agent in v2, distribution in v3 | Lead with standout feature (AI-generated fixes + visual preview) before building infrastructure. Claude Code skills as first backend avoids LLM SDK deps in v2. | v2 complete — 7 fix skills, agent loop, MCP server, Streamlit integration. v3 standalone backends pending. |
 
 ## Evolution
 
@@ -94,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-04 — Phase 5 complete (Scorer + Report Generator), 5/8 phases done*
+*Last updated: 2026-06-17 — V2 complete (LLM Advisor Agent + MCP server + Streamlit integration), 188 tests passing*
