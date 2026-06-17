@@ -77,7 +77,24 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Batch-process URLs from a CSV file (one URL per row, first column)",
     )
+    parser.add_argument(
+        "--serve", "-s",
+        action="store_true",
+        help="Start FastAPI server (python -m checker --serve --port 8000)",
+    )
+    parser.add_argument(
+        "--port", "-p",
+        type=int,
+        default=8000,
+        help="Port for --serve or --mcp (default: 8000)",
+    )
     args = parser.parse_args(argv)
+
+    # --serve mode: launch FastAPI server
+    if args.serve:
+        from .api_server import serve
+        serve(port=args.port)
+        return 0
 
     # --mcp mode: launch MCP server (does not run pipeline)
     if args.mcp:
