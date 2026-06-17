@@ -42,14 +42,14 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 - [x] Streamlit dashboard: URL input → spinner → overall score gauge → grade badge → per-module expandable sections → recommendations list (Phase 7)
 - [x] LLM Advisor Agent: 7 fix skills (schema, headings, readability, QA, llms.txt, preview, explain) with `--fix` CLI flag and "Improve My Site" button in Streamlit (v2)
 - [x] MCP Server: `checker_analyze` and `checker_fix` tools for MCP-compatible LLMs via `--mcp` flag (v2)
-- [ ] Standalone LLM backends: Ollama (Llama 3.2 3B), Anthropic API, OpenAI API — abstracted behind LLMBackend interface (v3)
-- [ ] JSON export: `--output report.json` flag for machine-readable output (v3)
-- [ ] Batch CSV analysis: `python -m checker --batch urls.csv` (v3)
+- [x] Standalone LLM backends: Ollama (Llama 3.2 3B), Anthropic API, OpenAI API — abstracted behind LLMBackend interface (v3)
+- [x] JSON export: `--output report.json` flag for machine-readable output (v3)
+- [x] Batch CSV analysis: `python -m checker --batch urls.csv` (v3)
+- [x] FastAPI wrapper: `checker --serve` for hosted API endpoint (v3)
 
 ### Out of Scope
 
-- Browser extension — future v3
-- Weekly monitoring / email alerts — future v3
+- Browser extension — future
 - Dataset publishing on HuggingFace — future v3
 - Authentication or user accounts — not needed for open-source tool
 
