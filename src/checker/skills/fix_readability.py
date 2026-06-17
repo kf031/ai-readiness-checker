@@ -51,7 +51,6 @@ def _fix_with_llm(html: str, readability_info: dict, backend) -> dict:
     """Use LLM to rewrite dense paragraphs for better readability."""
     from bs4 import BeautifulSoup
 
-    score = readability_info.get("score", 0.0)
     flesch = readability_info.get("flesch_reading_ease", "N/A")
 
     soup = BeautifulSoup(html, "lxml")

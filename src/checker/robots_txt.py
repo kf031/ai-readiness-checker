@@ -286,7 +286,7 @@ def fetch_robots_txt(url: str, timeout: float = DEFAULT_TIMEOUT) -> RobotsResult
             raw_text=None,
             fetched_at=now,
         )
-    except Exception as e:
+    except Exception:
         return RobotsResult(
             url=url,
             exists=False,

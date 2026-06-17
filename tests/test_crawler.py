@@ -1,11 +1,10 @@
 """Tests for crawler.py — covers CRAWL-01 and CRAWL-02."""
 
-import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 import requests
 
 # Import the module under test
-from checker.crawler import fetch_url, MAX_RESPONSE_SIZE, BLOCKED_HOSTS, BLOCKED_NETWORKS, is_ssrf_safe
+from checker.crawler import fetch_url, MAX_RESPONSE_SIZE, is_ssrf_safe
 from checker.contracts import FetchResult, CrawlError
 
 

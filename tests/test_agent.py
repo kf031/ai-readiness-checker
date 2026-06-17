@@ -1,6 +1,5 @@
 """Tests for v2 agent module — skill selection, merge, and orchestration."""
 
-import pytest
 from checker.agent import decide_skills, merge_results, run_llm_agent, build_agent_report
 from checker.contracts import AgentOutput
 
@@ -119,7 +118,7 @@ def test_run_llm_agent_no_failing_modules():
 def test_build_agent_report_from_pipeline_result():
     """build_agent_report constructs the right dict shape from pipeline output."""
     from checker.contracts import (
-        ScoreReport, RobotsResult, LlmsResult, SchemaAnalysis, ContentAnalysis, CrawlError
+        ScoreReport, RobotsResult, LlmsResult, SchemaAnalysis, ContentAnalysis
     )
 
     pipeline = {

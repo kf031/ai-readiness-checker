@@ -6,7 +6,6 @@ import pytest
 
 from checker.contracts import (
     ContentAnalysis,
-    CrawlError,
     FetchResult,
     LlmsResult,
     RobotsResult,

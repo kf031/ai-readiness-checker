@@ -2,7 +2,6 @@
 
 import sys
 from pathlib import Path
-from datetime import datetime, timezone
 
 import pytest
 from bs4 import BeautifulSoup

@@ -7,7 +7,6 @@ AppTest does not resolve local function names for patching.
 
 from unittest.mock import patch
 
-import pytest
 from streamlit.testing.v1 import AppTest
 
 

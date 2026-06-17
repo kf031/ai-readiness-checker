@@ -1,6 +1,5 @@
 """Tests for the content analysis module (Phase 4: CONT-01 through CONT-06)."""
 
-import pytest
 from bs4 import BeautifulSoup
 
 from checker.content_analyzer import (
@@ -15,7 +14,6 @@ from checker.content_analyzer import (
     compute_combined_score,
     MAX_TEXT_LENGTH,
 )
-from checker.contracts import ContentAnalysis
 from tests.conftest import (
     CONTENT_HTML_MULTI_ENTITY,
     CONTENT_HTML_TEXT_HEAVY,
@@ -137,7 +135,7 @@ def test_empty_page():
 
 def test_heading_structure():
     """CONT-04: Heading structure analysis (H1 uniqueness, hierarchy, descriptiveness)."""
-    from tests.conftest import CONTENT_HTML_TEXT_HEAVY, CONTENT_HTML_NO_HEADINGS
+    from tests.conftest import CONTENT_HTML_TEXT_HEAVY
     from checker.content_analyzer import analyze_headings, score_headings
 
     # Text-heavy page with proper heading hierarchy

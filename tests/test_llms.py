@@ -1,11 +1,9 @@
 """Tests for llms_txt.py — covers LLMS-01 and LLMS-02."""
 
-import pytest
 from unittest.mock import Mock, patch
 import httpx
 
 from checker.llms_txt import validate_llms_txt, fetch_llms_txt, compute_llms_score
-from checker.contracts import LlmsResult
 from tests.conftest import (
     LLMS_TXT_VALID,
     LLMS_TXT_NO_H1,

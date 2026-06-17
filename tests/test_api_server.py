@@ -1,6 +1,5 @@
 """Tests for FastAPI API server."""
 
-import pytest
 from unittest.mock import patch, Mock
 from fastapi.testclient import TestClient
 
@@ -69,7 +68,6 @@ def test_analyze_missing_url():
 
 def test_fix_endpoint():
     from checker.contracts import FetchResult
-    from bs4 import BeautifulSoup
 
     with patch("checker.api_server.run_pipeline") as mock_run, \
          patch("checker.api_server.run_llm_agent") as mock_agent:

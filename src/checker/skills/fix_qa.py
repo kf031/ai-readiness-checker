@@ -121,17 +121,20 @@ Output ONLY the Q&A HTML blocks, nothing else."""
 
         if qa_blocks:
             qa_section = (
-                f'\n<section>\n<h2>Frequently Asked Questions</h2>\n'
+                '\n<section>\n<h2>Frequently Asked Questions</h2>\n'
                 + "\n".join(qa_blocks)
                 + "\n</section>\n"
             )
 
             modified = html.replace("</body>", f"\n{qa_section}\n</body>", 1)
 
+            itemprop_pattern = 'itemprop="name"'
+            qa_count = len(re.findall(itemprop_pattern, qa_section))
+
             return {
                 "changes": [
                     f"Added AI-generated Q&A section with "
-                    f"{len(re.findall(r'itemprop=\"name\"', qa_section))} "
+                    f"{qa_count} "
                     f"questions based on page content"
                 ],
                 "modified_html": modified,

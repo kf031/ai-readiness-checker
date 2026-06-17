@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 
-from checker.contracts import SchemaAnalysis, FetchResult
+from checker.contracts import FetchResult
 from tests.conftest import (
     SCHEMA_JSONLD_PRODUCT,
     SCHEMA_MICRODATA_FAQ,

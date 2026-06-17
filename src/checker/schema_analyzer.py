@@ -24,7 +24,6 @@ Open Questions Resolved (per planner discretion):
 """
 
 import logging
-from datetime import datetime, timezone
 
 import extruct
 

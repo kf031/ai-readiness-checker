@@ -7,7 +7,6 @@ Run: python -m checker <url> [--timeout SECONDS] [--verbose] [--fix]
 
 import argparse
 import csv
-import io
 import json
 import sys
 from typing import Any

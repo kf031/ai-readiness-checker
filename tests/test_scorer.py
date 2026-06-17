@@ -4,7 +4,6 @@ import json
 from dataclasses import asdict
 from datetime import datetime, timezone
 
-import pytest
 
 from checker.contracts import (
     BotStatus,
