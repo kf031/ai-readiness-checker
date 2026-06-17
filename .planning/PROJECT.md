@@ -62,22 +62,24 @@ A single URL input returns a clear, scored, actionable report showing exactly wh
 - No strict deadline; goal is to ship a working v1 that can be shown as a portfolio piece or grown further
 - **v2 direction**: LLM Advisor Agent — a skill-calling agent that invokes modular fix skills (schema, headings, readability, Q&A) to generate improved HTML + visual before/after preview. Initial backend is Claude Code skills, standalone LLM backends in v3.
 - **v3 direction**: Distribution & scale — JSON export, batch CSV, FastAPI, browser extension, monitoring, standalone LLM backends (Ollama, Anthropic, OpenAI)
+- **v2 complete** (2026-06-17): 7 fix skills, agent loop, MCP server, Streamlit integration, 202 tests.
+- **v3 complete** (2026-06-17): LLM backends (Ollama, OpenAI, Anthropic), JSON export, batch CSV, FastAPI `/analyze` + `/fix` endpoints.
 
 ## Constraints
 
 - **Tech Stack**: Python 3.10+, libraries as specified in requirements.txt — no substitutions for v1
-- **Scope**: v1 is exactly the 9 modules listed in the plan; no new features until v1 is complete
+- **Scope**: All 8 phases complete (v1). v2 agent + fix skills complete. v3 LLM backends + distribution features complete.
 - **NLP Model**: spaCy en_core_web_sm (small model) — fast enough for single-URL analysis, no GPU required
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| spaCy en_core_web_sm (not md/lg) | Lightweight, no GPU needed, sufficient for entity detection on single pages | — Pending |
-| extruct for structured data extraction | Handles JSON-LD, microdata, and RDFa in one pass | — Pending |
-| Streamlit for demo UI | Easiest Python-native way to ship a shareable web demo with no backend work | — Pending |
-| Weighted scoring (content 35%, schema 30%) | Content quality and structured data are highest signal for AI citability | — Pending |
-| LLM Agent in v2, distribution in v3 | Lead with standout feature (AI-generated fixes + visual preview) before building infrastructure. Claude Code skills as first backend avoids LLM SDK deps in v2. | v2 complete — 7 fix skills, agent loop, MCP server, Streamlit integration. v3 standalone backends pending. |
+| spaCy en_core_web_sm (not md/lg) | Lightweight, no GPU needed, sufficient for entity detection on single pages | Deployed — entity extraction works with graceful fallback when model missing |
+| extruct for structured data extraction | Handles JSON-LD, microdata, and RDFa in one pass | Deployed — 4-format extraction with errors='log' for production safety |
+| Streamlit for demo UI | Easiest Python-native way to ship a shareable web demo with no backend work | Deployed — interactive dashboard with v2 "Improve My Site" button |
+| Weighted scoring (content 35%, schema 30%) | Content quality and structured data are highest signal for AI citability | Deployed — 5-module weighted scoring with A-F grade and recommendations |
+| LLM Agent in v2, distribution in v3 | Lead with standout feature (AI-generated fixes + visual preview) before building infrastructure. Claude Code skills as first backend avoids LLM SDK deps in v2. | v2 complete — 7 fix skills, agent loop, MCP server, Streamlit integration. v3 complete — 3 LLM backends, JSON export, batch CSV, FastAPI server. |
 
 ## Evolution
 
@@ -97,4 +99,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-17 — V2 complete (LLM Advisor Agent + MCP server + Streamlit integration), 188 tests passing*
+*Last updated: 2026-06-17 — Project complete. 8/8 phases, v2 agent, v3 LLM backends + API. 202 tests, zero failures.*
