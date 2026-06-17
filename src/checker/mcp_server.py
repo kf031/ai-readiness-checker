@@ -10,8 +10,8 @@ Exposes two tools:
 
 import json
 
-from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationCapabilities
+from mcp.server import Server
+from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 import mcp.types as types
 
@@ -118,10 +118,10 @@ async def main():
         await server.run(
             read_stream,
             write_stream,
-            InitializationCapabilities(
-                sampling={},
-                experimental={},
-                notifications=NotificationOptions(),
+            InitializationOptions(
+                server_name="checker",
+                server_version="2.0.0",
+                capabilities=types.ServerCapabilities(tools={}),
             ),
         )
 
