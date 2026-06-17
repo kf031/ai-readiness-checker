@@ -206,3 +206,41 @@ class ScoreReport:
 
 
 # TODO: v2 — CRAWL-03: add response.headers dict to FetchResult
+
+
+# ---- Phase v2: LLM Advisor Agent ----
+
+@dataclass
+class SkillResult:
+    """Result from executing a single fix skill.
+
+    Fields:
+        skill_name: Name of the skill that produced this result.
+        changes: Human-readable descriptions of each change made.
+        modified_html: The HTML after applying this skill's changes.
+        target: Where the change applies — "head", "body", or "full".
+    """
+
+    skill_name: str
+    changes: list[str] = field(default_factory=list)
+    modified_html: str = ""
+    target: str = "full"  # "head", "body", or "full"
+
+
+@dataclass
+class AgentOutput:
+    """Complete output from the v2 LLM Advisor agent.
+
+    Fields:
+        improved_html: The fully improved HTML after all fix skills applied.
+        diff_html: A before/after visual comparison HTML page.
+        explanation: Plain-English summary of all changes and why they help.
+        skills_called: Names of skills the agent decided to invoke.
+        changes: All human-readable change descriptions from every skill.
+    """
+
+    improved_html: str = ""
+    diff_html: str = ""
+    explanation: str = ""
+    skills_called: list[str] = field(default_factory=list)
+    changes: list[str] = field(default_factory=list)
