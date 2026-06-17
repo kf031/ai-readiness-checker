@@ -1,10 +1,16 @@
 """CLI entry point for AI Readiness Checker.
 
 Run: python -m checker <url> [--timeout SECONDS] [--verbose] [--fix]
+     python -m checker --batch urls.csv [--output results.csv]
+     python -m checker <url> --output report.json
 """
 
 import argparse
+import csv
+import io
+import json
 import sys
+from typing import Any
 
 from .cli_renderer import display_score_card
 from .contracts import CrawlError
@@ -30,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "url",
+        nargs="?",
+        default=None,
         help="URL to analyze (e.g., https://example.com)",
     )
     parser.add_argument(
@@ -57,6 +65,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Use an LLM backend for AI-powered fix generation (requires --fix)",
     )
+    parser.add_argument(
+        "--output", "-o",
+        type=str,
+        default=None,
+        help="Write JSON report to file (e.g., --output report.json)",
+    )
+    parser.add_argument(
+        "--batch", "-b",
+        type=str,
+        default=None,
+        help="Batch-process URLs from a CSV file (one URL per row, first column)",
+    )
     args = parser.parse_args(argv)
 
     # --mcp mode: launch MCP server (does not run pipeline)
@@ -65,6 +85,15 @@ def main(argv: list[str] | None = None) -> int:
         import asyncio
         asyncio.run(mcp_main())
         return 0
+
+    # --batch mode: process multiple URLs from CSV
+    if args.batch:
+        return _run_batch(args.batch, args.timeout, args.verbose, args.fix,
+                          args.llm_backend, args.output)
+
+    # Single URL is required unless --batch or --mcp
+    if not args.url:
+        parser.error("url is required (or use --batch or --mcp)")
 
     # Run the full analysis pipeline
     result = run_pipeline(args.url, timeout=args.timeout, verbose=args.verbose)
@@ -75,6 +104,10 @@ def main(argv: list[str] | None = None) -> int:
     # --fix mode: invoke the v2 agent after scoring
     if args.fix:
         _run_fix(result, args.llm_backend)
+
+    # --output: write JSON report to file
+    if args.output:
+        _write_json_output(result, args.output)
 
     return 0
 
@@ -124,6 +157,123 @@ def _run_fix(pipeline_result: dict, backend_name: str | None = None) -> None:
     else:
         print("No improvements needed — all modules scored above threshold.")
     print(f"\n{output.explanation}")
+
+
+def _run_batch(batch_file: str, timeout: float, verbose: bool, fix: bool,
+               backend_name: str | None, output_file: str | None) -> int:
+    """Run pipeline on multiple URLs from a CSV file.
+
+    Args:
+        batch_file: Path to CSV file (one URL per row, first column).
+        timeout: HTTP timeout.
+        verbose: Show progress.
+        fix: Run agent fixes after scoring.
+        backend_name: LLM backend for fixes.
+        output_file: Write results to this CSV file.
+
+    Returns:
+        Exit code: 0 on success.
+    """
+    urls = []
+    try:
+        with open(batch_file, newline="") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if row and row[0].strip():
+                    urls.append(row[0].strip())
+    except FileNotFoundError:
+        print(f"Error: file not found: {batch_file}", file=sys.stderr)
+        return 1
+
+    if not urls:
+        print("No URLs found in batch file.", file=sys.stderr)
+        return 1
+
+    results = []
+    for i, url in enumerate(urls, 1):
+        print(f"[{i}/{len(urls)}] {url}", end="", flush=True)
+        try:
+            result = run_pipeline(url, timeout=timeout, verbose=verbose)
+            report = result.get("report")
+            results.append({
+                "url": url,
+                "overall_score": report.overall_score if report else "N/A",
+                "grade": report.grade if report else "N/A",
+                "complete": result.get("complete", False),
+                "errors": len(result.get("errors", [])),
+            })
+            print(f"  → {report.grade if report else 'ERR'} ({report.overall_score if report else 'N/A'})")
+        except Exception as e:
+            results.append({
+                "url": url,
+                "overall_score": "ERR",
+                "grade": "ERR",
+                "complete": False,
+                "errors": 1,
+            })
+            print(f"  → error: {e}")
+
+    # Print summary table
+    print(f"\n{'─' * 72}")
+    print(f"{'URL':<50} {'Score':>8} {'Grade':>6}")
+    print(f"{'─' * 72}")
+    for r in results:
+        print(f"{r['url']:<50} {r['overall_score']:>8} {r['grade']:>6}")
+
+    if fix:
+        print("\n[fix] --fix is not yet supported in batch mode. Run individually with --fix.")
+
+    # Write output CSV if requested
+    if output_file:
+        with open(output_file, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["url", "overall_score", "grade", "complete", "errors"])
+            writer.writeheader()
+            writer.writerows(results)
+        print(f"\nResults written to {output_file}")
+
+    return 0
+
+
+def _write_json_output(pipeline_result: dict, path: str) -> None:
+    """Serialize the pipeline result to JSON and write to a file.
+
+    Strips non-serializable objects (soup, fetch_result, raw module objects).
+    Keeps the ScoreReport, errors, complete, stages_run.
+    """
+    report = pipeline_result.get("report")
+    data = _serialize_report(report)
+    data["errors"] = pipeline_result.get("errors", [])
+    data["complete"] = pipeline_result.get("complete", False)
+    data["stages_run"] = pipeline_result.get("stages_run", [])
+
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2, default=str)
+    print(f"\nReport written to {path}")
+
+
+def _serialize_report(report) -> dict[str, Any]:
+    """Convert a ScoreReport to a JSON-safe dict."""
+    return {
+        "url": getattr(report, "url", ""),
+        "overall_score": getattr(report, "overall_score", 0.0),
+        "grade": getattr(report, "grade", "N/A"),
+        "module_breakdown": _safe_dict(getattr(report, "module_breakdown", {})),
+        "recommendations": _safe_list(getattr(report, "recommendations", [])),
+        "timestamp": str(getattr(report, "timestamp", "")),
+    }
+
+
+def _safe_dict(d):
+    """Recursively convert dataclass-in-dict to plain dict."""
+    if hasattr(d, "items"):
+        return {str(k): _safe_dict(v) for k, v in d.items()}
+    if isinstance(d, list):
+        return [_safe_dict(i) for i in d]
+    return d
+
+
+def _safe_list(lst):
+    return [_safe_dict(i) for i in (lst or [])]
 
 
 if __name__ == "__main__":
