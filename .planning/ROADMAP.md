@@ -11,9 +11,9 @@ Build an open-source Python tool that scores any website's AI search engine visi
 - [x] **Phase 3: Schema Extraction** - Structured data extraction and weighted scoring across 6 high-value schema types
 - [x] **Phase 4: Content Analysis** - NLP-based content quality analysis (readability, entities, headings, Q&A density)
 - [x] **Phase 5: Scorer + Report Generator** - Weighted composite scoring with A-F grade and prioritized recommendations
-- [ ] **Phase 6: Pipeline Orchestrator + CLI** - Full pipeline wired into a single terminal command with rich-formatted output
-- [ ] **Phase 7: Streamlit Dashboard** - Interactive web UI for URL input, score visualization, and result exploration
-- [ ] **Phase 8: Test Suite** - Automated pytest coverage for robots, schema, and content analyzer modules
+- [x] **Phase 6: Pipeline Orchestrator + CLI** - Full pipeline wired into a single terminal command with rich-formatted output
+- [x] **Phase 7: Streamlit Dashboard** - Interactive web UI for URL input, score visualization, and result exploration
+- [x] **Phase 8: Test Suite** - Automated pytest coverage for robots, schema, and content analyzer modules
 
 ## Phase Details
 
@@ -146,11 +146,11 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Plans**: 3 plans in 2 waves
 
 **Wave 1** *(no dependencies — parallel)*
-- [ ] 06-01: Pipeline Orchestrator — run_pipeline() wiring all 5 phases with CrawlError branching and module failure recovery
-- [ ] 06-02: CLI Renderer — Rich-formatted score card with colored grade, per-module bars, and prioritized recommendations
+- [x] 06-01: Pipeline Orchestrator — run_pipeline() wiring all 5 phases with CrawlError branching and module failure recovery
+- [x] 06-02: CLI Renderer — Rich-formatted score card with colored grade, per-module bars, and prioritized recommendations
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06-03: CLI Entry Point — __main__.py with argparse, python -m checker <url> command
+- [x] 06-03: CLI Entry Point — __main__.py with argparse, python -m checker <url> command
 
 **Cross-cutting constraints:**
 - orchestrator.py imports existing modules (crawler, access_fetcher, schema_analyzer, content_analyzer, scorer) — does NOT re-implement any analysis logic
@@ -198,9 +198,9 @@ Build an open-source Python tool that scores any website's AI search engine visi
 **Plans**: 3 plans in 1 wave
 
 **Wave 1** *(no dependencies — all three modules tested in parallel)*
-- [ ] 08-01: Robots Analyzer Test Gaps — fetch_robots_txt error paths, success path, response_too_large (TEST-01)
-- [ ] 08-02: Schema Analyzer Test Gaps — normalize_type_name, extruct failure, custom weights, empty HTML (TEST-02)
-- [ ] 08-03: Content Analyzer Test Gaps — heading edge cases, _is_question, custom weights, text truncation (TEST-03)
+- [x] 08-01: Robots Analyzer Test Gaps — fetch_robots_txt error paths, success path, response_too_large (TEST-01)
+- [x] 08-02: Schema Analyzer Test Gaps — normalize_type_name, extruct failure, custom weights, empty HTML (TEST-02)
+- [x] 08-03: Content Analyzer Test Gaps — heading edge cases, _is_question, custom weights, text truncation (TEST-03)
 
 **Cross-cutting constraints:**
 - All three plans modify different test files (test_robots.py, test_schema.py, test_content.py) — zero file overlap, fully parallel
@@ -220,6 +220,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Schema Extraction | 2/2 | Complete | 2026-05-03 |
 | 4. Content Analysis | 3/3 | Complete | 2026-05-03 |
 | 5. Scorer + Report Generator | 2/2 | Complete | 2026-05-04 |
-| 6. Pipeline Orchestrator + CLI | 0/3 | Planned | - |
+| 6. Pipeline Orchestrator + CLI | 3/3 | Complete | 2026-05-04 |
 | 7. Streamlit Dashboard | 3/3 | Complete | 2026-05-13 |
-| 8. Test Suite | 0/3 | Planned | - |
+| 8. Test Suite | 3/3 | Complete | 2026-06-17 |

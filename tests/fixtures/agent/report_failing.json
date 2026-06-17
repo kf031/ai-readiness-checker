@@ -1,0 +1,21 @@
+{
+  "url": "https://example.com",
+  "overall_score": 55,
+  "grade": "C",
+  "modules": {
+    "robots": {"score": 0.8},
+    "llms_txt": {"score": 0.0},
+    "schema": {
+      "score": 0.3,
+      "types_found": ["Product"],
+      "types_missing": ["FAQPage", "BreadcrumbList"]
+    },
+    "content": {
+      "score": 0.45,
+      "readability": {"score": 0.5, "flesch_reading_ease": 35.2},
+      "headings": {"score": 0.4, "h1_count": 2, "issues": ["Multiple H1s"]},
+      "qa_density": {"score": 0.2, "question_count": 1},
+      "text_ratio": {"score": 0.6, "ratio": 0.18}
+    }
+  }
+}

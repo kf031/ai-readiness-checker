@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import patch, Mock
 import httpx
 
-from src.checker.robots_txt import analyze_robots, compute_bot_score, fetch_robots_txt, BOT_TOKENS
+from src.checker.robots_txt import analyze_robots, compute_bot_score, fetch_robots_txt, BOT_TOKENS, MAX_ROBOTS_SIZE
 from src.checker.contracts import RobotsResult, BotStatus
 from tests.conftest import (
     ROBOTS_TXT_ALL_ALLOWED,
@@ -152,3 +152,130 @@ def test_robots_connection_error():
     # Connection error score is 0.3 (enforced by caller, not inside compute_bot_score)
     score = compute_bot_score(result.bots)
     assert score == 0.5  # compute_bot_score on empty list = baseline 0.5
+
+
+# ----- fetch_robots_txt error path tests -----
+
+def test_fetch_robots_txt_401():
+    """401 response returns exists=False, status_code=401, fetch_error=None."""
+    mock_response = Mock()
+    mock_response.status_code = 401
+    mock_response.text = ""
+
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.return_value = mock_response
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.status_code == 401
+    assert result.fetch_error is None
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_403():
+    """403 response returns exists=False, status_code=403, fetch_error=None."""
+    mock_response = Mock()
+    mock_response.status_code = 403
+    mock_response.text = ""
+
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.return_value = mock_response
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.status_code == 403
+    assert result.fetch_error is None
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_500():
+    """500 response returns exists=False, fetch_error='http_error_500'."""
+    mock_response = Mock()
+    mock_response.status_code = 500
+    mock_response.text = ""
+
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.return_value = mock_response
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.status_code == 500
+    assert result.fetch_error == "http_error_500"
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_too_large():
+    """Response exceeding MAX_ROBOTS_SIZE returns fetch_error='response_too_large'."""
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.text = "x" * (MAX_ROBOTS_SIZE + 1)
+
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.return_value = mock_response
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.fetch_error == "response_too_large"
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_timeout():
+    """TimeoutException returns exists=False, fetch_error='timeout'."""
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.side_effect = httpx.TimeoutException("timeout")
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.fetch_error == "timeout"
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_http_status_error():
+    """HTTPStatusError returns exists=False, fetch_error='http_error_{code}'."""
+    mock_resp = Mock()
+    mock_resp.status_code = 502
+    error = httpx.HTTPStatusError("Bad Gateway", request=Mock(), response=mock_resp)
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.side_effect = error
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.status_code == 502
+    assert result.fetch_error == "http_error_502"
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_general_exception():
+    """General Exception returns exists=False, fetch_error='request_error'."""
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.side_effect = RuntimeError("unexpected")
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is False
+    assert result.fetch_error == "request_error"
+    assert result.bots == []
+    assert result.raw_text is None
+
+
+def test_fetch_robots_txt_success():
+    """200 OK with valid robots text returns exists=True, bots populated."""
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.text = ROBOTS_TXT_ALL_ALLOWED
+
+    with patch('httpx.Client') as mock_client:
+        mock_client.return_value.__enter__.return_value.get.return_value = mock_response
+        result = fetch_robots_txt("https://example.com")
+
+    assert result.exists is True
+    assert result.fetch_error is None
+    assert len(result.bots) == 7
+    assert result.raw_text == ROBOTS_TXT_ALL_ALLOWED
+    assert result.status_code == 200
+    assert result.bots[0].status == "allowed"

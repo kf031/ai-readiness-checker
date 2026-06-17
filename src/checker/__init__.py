@@ -37,7 +37,12 @@ from src.checker.scorer import generate_report
 # Phase 6 exports — pipeline orchestrator
 from src.checker.orchestrator import run_pipeline
 
+# V2 exports — LLM Advisor Agent
+from src.checker.contracts import AgentOutput, SkillResult
+from src.checker.agent import run_llm_agent, decide_skills, build_agent_report
+
 __all__ = [
+    "AgentOutput",
     "BotStatus",
     "ContentAnalysis",
     "CrawlError",
@@ -46,9 +51,13 @@ __all__ = [
     "RobotsResult",
     "SchemaAnalysis",
     "ScoreReport",
+    "SkillResult",
     "analyze_content",
     "analyze_schema",
+    "build_agent_report",
+    "decide_skills",
     "fetch_access_signals",
     "generate_report",
+    "run_llm_agent",
     "run_pipeline",
 ]

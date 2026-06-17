@@ -20,6 +20,7 @@ dependencies = [
     "rich>=13.0,<14.0",
     "streamlit>=1.30,<2.0",
     "pandas>=2.0,<3.0",
+    "mcp>=1.0,<2.0",
 ]
 
 [project.optional-dependencies]

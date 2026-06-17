@@ -46,6 +46,7 @@ def test_pipeline_full_success(sample_robots_result, sample_llms_result,
         assert set(result.keys()) == {
             "report", "errors", "complete", "stages_run",
             "robots_result", "llms_result", "schema_analysis", "content_analysis",
+            "fetch_result",
         }
         assert isinstance(result["robots_result"], RobotsResult)
         assert isinstance(result["llms_result"], LlmsResult)

@@ -5,10 +5,15 @@ from bs4 import BeautifulSoup
 
 from src.checker.content_analyzer import (
     _extract_plain_text,
+    _is_question,
     extract_entities,
     score_entities,
     score_readability,
     score_text_ratio,
+    analyze_qa_density,
+    score_qa_density,
+    compute_combined_score,
+    MAX_TEXT_LENGTH,
 )
 from src.checker.contracts import ContentAnalysis
 from tests.conftest import (
@@ -171,6 +176,97 @@ def test_heading_structure_no_headings():
     assert score_headings(analysis) == 0.0
 
 
+# Inline HTML fixtures for heading edge case tests
+
+CONTENT_HTML_DUPLICATE_H1 = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Duplicate H1 Page</title></head>
+<body>
+    <h1>Main Title Version A</h1>
+    <p>Some content under the first H1.</p>
+    <h1>Main Title Version B</h1>
+    <p>Different content under the second H1. Having two H1 elements confuses AI crawlers about the primary topic.</p>
+    <h2>Section One</h2>
+    <p>Content under first H2 section with sufficient words to be descriptive.</p>
+    <h2>Brief</h2>
+    <p>Short H2 above is not descriptive.</p>
+</body>
+</html>"""
+
+CONTENT_HTML_H3_NO_H2 = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>H3 Without H2 Page</title></head>
+<body>
+    <h1>Main Article Title</h1>
+    <p>This article has a valid H1 and several H3 elements, but no H2 elements.</p>
+    <h3>Skipping a level</h3>
+    <p>This H3 exists without any H2 in the document — a heading hierarchy violation.</p>
+    <h3>Another skip</h3>
+    <p>Another H3 that breaks the heading hierarchy by not having an H2 parent section.</p>
+</body>
+</html>"""
+
+
+# --- Heading edge case tests ---
+
+def test_heading_duplicate_h1():
+    """Two H1 elements -> h1_unique is False, heading_score < 0.5."""
+    from src.checker.content_analyzer import analyze_headings, score_headings
+
+    soup = BeautifulSoup(CONTENT_HTML_DUPLICATE_H1, "lxml")
+    analysis = analyze_headings(soup)
+
+    assert analysis["h1_count"] == 2
+    assert analysis["h1_unique"] is False
+
+    score = score_headings(analysis)
+    assert 0.0 <= score <= 1.0
+    # H1 not unique (h1_score=0.0), hierarchy clean (hier_score=1.0)
+    # => (0.0 + 1.0 + desc_proportion) / 3 <= 0.5
+    assert score <= 0.5
+
+
+def test_heading_h3_without_h2():
+    """H3 elements without H2 -> hierarchy_violations == 2, heading_score < 0.7."""
+    from src.checker.content_analyzer import analyze_headings, score_headings
+
+    soup = BeautifulSoup(CONTENT_HTML_H3_NO_H2, "lxml")
+    analysis = analyze_headings(soup)
+
+    assert analysis["h3_count"] == 2
+    assert analysis["h2_count"] == 0
+    assert analysis["hierarchy_violations"] == 2
+
+    score = score_headings(analysis)
+    # h1 unique (1.0), hierarchy violated (0.0), desc_proportion depends
+    # => (1.0 + 0.0 + desc_proportion) / 3 < 0.7
+    assert score < 0.7
+
+
+def test_analyze_content_no_headings():
+    """analyze_content on no-headings fixture -> heading_score == 0.0, total_headings == 0."""
+    from tests.conftest import CONTENT_HTML_NO_HEADINGS
+    from src.checker.contracts import FetchResult
+    from src.checker.content_analyzer import analyze_content
+
+    soup = BeautifulSoup(CONTENT_HTML_NO_HEADINGS, "lxml")
+    fetch_result = FetchResult(
+        url="https://example.com/no-headings",
+        final_url="https://example.com/no-headings",
+        status_code=200,
+        html=CONTENT_HTML_NO_HEADINGS,
+        soup=soup,
+    )
+
+    result = analyze_content(fetch_result)
+
+    assert result.heading_score == 0.0
+    assert result.heading_analysis["total_headings"] == 0
+    assert result.heading_analysis["h1_count"] == 0
+    assert result.heading_analysis["h2_count"] == 0
+    assert result.heading_analysis["h3_count"] == 0
+
+
 # --- CONT-05: Q&A Density ---
 
 def test_qa_density():
@@ -325,3 +421,64 @@ def test_spacy_model_missing():
     # Other scores should still work (they don't need spaCy)
     assert result.readability_score > 0.0, "Readability should work without spaCy"
     assert result.heading_score > 0.0, "Headings should work without spaCy"
+
+
+# --- _is_question classification tests ---
+
+def test_is_question_classification():
+    """_is_question correctly classifies various sentence patterns."""
+    assert _is_question("") is False
+    assert _is_question("   ") is False
+    assert _is_question("What is AI search visibility?") is True
+    assert _is_question("How do I check my site's AI readiness for search engines") is True
+    assert _is_question("The quick brown fox jumps over the lazy dog") is False
+    assert _is_question("Can it") is False  # question word but len <= 10
+    assert _is_question("Is this AI-ready?") is True  # ? takes priority over short length
+
+
+# --- compute_combined_score custom weights test ---
+
+def test_compute_combined_score_custom_weights():
+    """compute_combined_score uses custom weights and clamps to [0.0, 1.0]."""
+    custom = {
+        "readability": 0.5,
+        "text_ratio": 0.0,
+        "entities": 0.0,
+        "headings": 0.5,
+        "qa_density": 0.0,
+    }
+    # (0.8*0.5)+(0.6*0.0)+(0.4*0.0)+(0.7*0.5)+(0.5*0.0) = 0.4 + 0.35 = 0.75
+    assert compute_combined_score(0.8, 0.6, 0.4, 0.7, 0.5, weights=custom) == 0.75
+
+    # Result is clamped to 1.0
+    all_zeros = {"readability": 1.0, "text_ratio": 0.0, "entities": 0.0,
+                  "headings": 0.0, "qa_density": 0.0}
+    assert compute_combined_score(2.0, 0.0, 0.0, 0.0, 0.0, weights=all_zeros) == 1.0
+
+
+# --- QA density heading questions test ---
+
+def test_qa_density_heading_questions():
+    """FAQ fixture has heading_question_count > 0 and non-zero QA score."""
+    from tests.conftest import CONTENT_HTML_FAQ
+
+    soup = BeautifulSoup(CONTENT_HTML_FAQ, "lxml")
+    text = _extract_plain_text(soup)
+    analysis = analyze_qa_density(text, soup)
+
+    assert analysis["heading_question_count"] > 0
+    assert analysis["question_count"] >= 0
+    assert score_qa_density(analysis) > 0.0
+
+
+# --- text truncation test ---
+
+def test_text_truncation_max_length():
+    """_extract_plain_text truncates text exceeding MAX_TEXT_LENGTH."""
+    long_paragraph = "This is a test sentence that will be repeated many times. " * 30000
+    html = f"<html><body><p>{long_paragraph}</p></body></html>"
+    soup = BeautifulSoup(html, "lxml")
+    text = _extract_plain_text(soup)
+
+    assert len(text) <= MAX_TEXT_LENGTH
+    assert len(text) == MAX_TEXT_LENGTH

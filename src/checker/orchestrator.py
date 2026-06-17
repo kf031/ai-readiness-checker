@@ -117,4 +117,5 @@ def run_pipeline(url: str, timeout: float = 10.0, verbose: bool = False) -> dict
         "llms_result": llms_result or LlmsResult(url=url),
         "schema_analysis": schema_analysis or SchemaAnalysis(url=url),
         "content_analysis": content_analysis or ContentAnalysis(url=url),
+        "fetch_result": fetch_result,  # FetchResult or CrawlError — has .html for v2 agent
     }

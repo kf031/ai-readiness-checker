@@ -174,6 +174,65 @@ def test_score_partial():
     assert compute_schema_score({"FAQPage", "BreadcrumbList"}) == 0.35
 
 
+# -- normalize_type_name unit tests --
+
+
+def test_normalize_type_none():
+    """normalize_type_name(None) returns None."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name(None) is None
+
+
+def test_normalize_type_empty_string():
+    """normalize_type_name('') returns None."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("") is None
+
+
+def test_normalize_type_whitespace():
+    """normalize_type_name('   ') returns None (whitespace-only strips to empty)."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("   ") is None
+
+
+def test_normalize_type_uri():
+    """normalize_type_name('http://schema.org/Product') returns 'Product'."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("http://schema.org/Product") == "Product"
+
+
+def test_normalize_type_lowercase_og():
+    """normalize_type_name('product') returns 'Product' (lowercase OG via .title())."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("product") == "Product"
+
+
+def test_normalize_type_pascalcase():
+    """normalize_type_name('FAQPage') returns 'FAQPage' (PascalCase pass-through)."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("FAQPage") == "FAQPage"
+
+
+def test_normalize_type_pascalcase_multiword():
+    """normalize_type_name('BreadcrumbList') returns 'BreadcrumbList' (multi-word pass-through)."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("BreadcrumbList") == "BreadcrumbList"
+
+
+def test_normalize_type_uri_localbusiness():
+    """normalize_type_name('http://schema.org/LocalBusiness') returns 'LocalBusiness'."""
+    from src.checker.schema_analyzer import normalize_type_name
+
+    assert normalize_type_name("http://schema.org/LocalBusiness") == "LocalBusiness"
+
+
 # -- TARGET_TYPES integrity checks --
 
 
@@ -214,3 +273,53 @@ def test_analyze_schema_multi_format():
     assert analysis.detected_types.issuperset(
         {"Product", "Article", "FAQPage", "BreadcrumbList"}
     ), f"detected_types missing expected types: {analysis.detected_types}"
+
+
+# -- edge case tests --
+
+
+def test_extruct_catastrophic_failure():
+    """extruct.extract raising Exception returns empty dict keys, no crash."""
+    from unittest.mock import patch
+    from src.checker.schema_analyzer import extract_structured_data
+    import extruct
+
+    with patch.object(extruct, 'extract', side_effect=RuntimeError("crash")):
+        result = extract_structured_data("<html></html>")
+
+    assert set(result.keys()) == {"json-ld", "microdata", "opengraph", "rdfa"}
+    for key in result:
+        assert result[key] == [], f"{key} should be empty list"
+
+
+def test_compute_schema_score_custom_weights():
+    """compute_schema_score with custom weights dict uses provided weights."""
+    from src.checker.schema_analyzer import compute_schema_score
+
+    custom = {"Product": 0.5, "FAQPage": 0.5}
+    assert compute_schema_score({"Product"}, weights=custom) == 0.5
+    assert compute_schema_score({"Product", "FAQPage"}, weights=custom) == 1.0
+    # Type not in custom weights contributes 0.0
+    assert compute_schema_score({"Organization"}, weights=custom) == 0.0
+
+
+def test_analyze_schema_empty_html():
+    """analyze_schema on empty HTML returns all-empty SchemaAnalysis with score 0.0."""
+    from src.checker.schema_analyzer import analyze_schema
+
+    fetch_result = FetchResult(
+        url="https://example.com",
+        final_url="https://example.com",
+        status_code=200,
+        html=SCHEMA_EMPTY_HTML,
+        soup=BeautifulSoup(SCHEMA_EMPTY_HTML, "lxml"),
+        fetched_at=datetime.now(timezone.utc),
+    )
+    analysis = analyze_schema(fetch_result)
+    for key in ("json-ld", "microdata", "opengraph", "rdfa"):
+        assert key in analysis.raw, f"Missing key: {key}"
+        assert analysis.raw[key] == []
+    assert analysis.detected_types == set()
+    assert analysis.type_details == {}
+    assert analysis.score == 0.0
+    assert analysis.url == "https://example.com"
