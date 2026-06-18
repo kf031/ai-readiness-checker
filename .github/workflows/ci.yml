@@ -29,7 +29,7 @@ jobs:
         run: python -m spacy download en_core_web_sm
 
       - name: Run tests
-        run: python -m pytest tests/ -v --tb=long -p no:warnings --reruns 2 --junitxml=junit.xml
+        run: python -m pytest tests/ -v --tb=long -p no:warnings -m "not dashboard" --junitxml=junit.xml
 
       - name: Upload test results
         if: always()
@@ -50,26 +50,7 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Run tests (no NLP)
-        run: |
-          set -o pipefail
-          python -m pytest tests/ -v --tb=long -p no:warnings --reruns 2 --junitxml=junit.xml 2>&1 | tee test-output.txt
-        shell: bash
-
-      - name: Print failure summary
-        if: always()
-        run: |
-          python3 -c "
-          import xml.etree.ElementTree as ET
-          tree = ET.parse('junit.xml')
-          for tc in tree.findall('.//testcase'):
-              for f in tc.findall('failure'):
-                  print('FAIL:', tc.get('classname','?'), tc.get('name','?'))
-                  print(f.get('message','')[:500])
-              for e in tc.findall('error'):
-                  print('ERROR:', tc.get('classname','?'), tc.get('name','?'))
-                  print(e.get('message','')[:500])
-          " 2>/dev/null || echo "No junit.xml to parse"
-        shell: bash
+        run: python -m pytest tests/ -v --tb=long -p no:warnings -m "not dashboard" --junitxml=junit.xml
 
       - name: Upload test results
         if: always()

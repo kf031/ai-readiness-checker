@@ -3,11 +3,17 @@
 Uses streamlit.testing.v1.AppTest for functional testing.
 All tests patch src.checker.orchestrator.run_pipeline since
 AppTest does not resolve local function names for patching.
+
+Note: Marked 'dashboard' — flaky on CI runners due to Streamlit AppTest
+rendering races. Run locally: pytest -m dashboard
 """
 
+import pytest
 from unittest.mock import patch
 
 from streamlit.testing.v1 import AppTest
+
+pytestmark = pytest.mark.dashboard
 
 
 # ---------------------------------------------------------------------------

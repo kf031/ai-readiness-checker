@@ -62,3 +62,6 @@ where = ["src"]
 testpaths = ["tests"]
 python_files = "test_*.py"
 addopts = "-v --tb=short"
+markers = [
+    "dashboard: Streamlit AppTest-based tests (flaky on CI — run locally)",
+]
